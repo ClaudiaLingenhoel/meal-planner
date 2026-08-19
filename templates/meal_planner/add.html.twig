@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Add to Meal Planner
+{% endblock %}
+
+{% block body %}
+
+    <h1>Add {{ recipe.title }} to Meal Planner</h1>
+
+    {{ include('meal_planner/_form.html.twig', {button_label: 'Add to planner'}) }}
+
+    <a href="{{ path('app_recipe_index') }}">Back to recipes</a>
+
+{% endblock %}

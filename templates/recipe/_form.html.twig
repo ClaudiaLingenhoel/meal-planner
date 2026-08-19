@@ -1,4 +1,51 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+{{ form_row(form.title) }}
+{{ form_row(form.shortDescription) }}
+{{ form_row(form.cookingTimeMinutes) }}
+{{ form_row(form.servings) }}
+{{ form_row(form.dietaryType) }}
+{{ form_row(form.instructions) }}
+{{ form_row(form.source) }}
+{{ form_row(form.image) }}
+
+
+<h2>Ingredients</h2>
+
+{# prototype for new recipe-ingredients #}
+{% set ingredientPrototype %}
+    <div class="recipe-ingredient-item card p-3 mb-3">
+        {{ form_widget(form.recipeIngredients.vars.prototype) }}
+
+        <button type="button" class="remove-ingredient btn btn-secondary">
+            Remove
+        </button>
+    </div>
+{% endset %}
+
+{# recipe-ingredients collection #}
+<div id="recipe-ingredients" data-index="{{ form.recipeIngredients|length }}" data-prototype="{{ ingredientPrototype|e('html_attr') }}">
+
+    {# existing recipe-ingredients #}
+    {% for recipeIngredientForm in form.recipeIngredients %}
+        <div class="recipe-ingredient-item card p-3 mb-3">
+            {{ form_row(recipeIngredientForm, {
+            label:false
+            }) }}
+
+            <button type="button" class="remove-ingredient btn btn-secondary">
+                Remove
+            </button>
+        </div>
+    {% endfor %}
+</div>
+
+<button type="button" id="add-ingredient" class="btn btn-secondary">
+    Add another ingredient
+</button>
+
+<button class="btn">
+    {{ button_label|default('Save') }}
+</button>
+
 {{ form_end(form) }}

@@ -6,11 +6,17 @@ use App\Enum\MealTime;
 use App\Repository\PlannedMealRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: PlannedMealRepository::class)]
 #[ORM\UniqueConstraint(
     name: 'unique_planned_meal',
     fields: ['user', 'recipe', 'scheduledFor', 'mealTime']
+)]
+#[UniqueEntity(
+    fields: ['user', 'recipe', 'scheduledFor', 'mealTime'],
+    message: 'This recipe is already planned for this meal.',
+    errorPath: 'mealTime'
 )]
 class PlannedMeal
 {

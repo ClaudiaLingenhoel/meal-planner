@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\PlannedMeal;
+use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,6 +32,20 @@ class PlannedMealRepository extends ServiceEntityRepository
     //            ->getResult()
     //        ;
     //    }
+
+    public function findForUserAndWeek(User $user, DateTime $start, DateTime $end): array
+    {
+        return $this->createQueryBuilder('pm')
+            ->andWhere('pm.user = :user')
+            ->andWhere('pm.scheduledFor BETWEEN :start AND :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('pm.scheduledFor', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
     //    public function findOneBySomeField($value): ?PlannedMeal
     //    {

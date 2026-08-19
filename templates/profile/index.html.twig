@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block body %}
+
+    <h1>My Profile</h1>
+
+    <p>{{ user.firstName }} {{ user.lastName }}</p>
+    <p>{{ user.email }}</p>
+
+    {% if user.dietaryType %}
+        <p>Preferred dietary type: {{ user.dietaryType.name }}</p>
+    {% endif %}
+
+    <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">Edit profile</a>
+{% endblock %}
+

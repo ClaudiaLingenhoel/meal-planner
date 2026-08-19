@@ -4,11 +4,12 @@ namespace App\Form;
 
 use App\Entity\DietaryType;
 use App\Entity\Recipe;
-use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class RecipeType extends AbstractType
 {
@@ -18,19 +19,24 @@ class RecipeType extends AbstractType
             ->add('title')
             ->add('cookingTimeMinutes')
             ->add('shortDescription')
-            ->add('instructions')
+            ->add('instructions', TextareaType::class, [
+                'attr' => [
+                    'rows' => 10,
+                ],
+            ])
             ->add('source')
             ->add('servings')
             ->add('image')
-            ->add('createdAt')
-            ->add('updatedAt')
             ->add('dietaryType', EntityType::class, [
                 'class' => DietaryType::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
+                'placeholder' => 'Select dietary type',
             ])
-            ->add('creator', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('recipeIngredients', CollectionType::class, [
+                'entry_type' => RecipeIngredientType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
             ])
         ;
     }

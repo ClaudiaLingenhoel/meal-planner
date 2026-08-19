@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Erstellungszeit: 18. Aug 2026 um 19:46
+-- Erstellungszeit: 19. Aug 2026 um 18:54
 -- Server-Version: 8.0.44
 -- PHP-Version: 8.3.30
 SET
@@ -174,6 +174,23 @@ CREATE TABLE `planned_meal` (
   `recipe_id` int NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
+--
+-- Daten für Tabelle `planned_meal`
+--
+INSERT INTO
+  `planned_meal` (
+    `id`,
+    `scheduled_for`,
+    `meal_time`,
+    `user_id`,
+    `recipe_id`
+  )
+VALUES
+  (1, '2026-08-20', 'breakfast', 1, 1),
+  (4, '2026-08-20', 'lunch', 1, 1),
+  (7, '2026-08-17', 'breakfast', 1, 3),
+  (6, '2026-08-17', 'dinner', 1, 5);
+
 -- --------------------------------------------------------
 --
 -- Tabellenstruktur für Tabelle `recipe`
@@ -236,7 +253,7 @@ VALUES
     4,
     NULL,
     '2026-08-18 21:15:53',
-    NULL,
+    '2026-08-19 14:39:50',
     1,
     2
   ),
@@ -278,8 +295,36 @@ VALUES
     1,
     NULL,
     '2026-08-18 21:15:53',
-    NULL,
+    '2026-08-19 16:33:22',
     3,
+    1
+  ),
+  (
+    6,
+    'new recipe',
+    123,
+    'blabla',
+    'blabla bla bla blabla',
+    NULL,
+    2,
+    NULL,
+    '2026-08-19 15:20:00',
+    NULL,
+    2,
+    1
+  ),
+  (
+    7,
+    'aaa',
+    12,
+    'aaaa',
+    '333fdsdddddddddddddddd',
+    NULL,
+    1,
+    NULL,
+    '2026-08-19 16:12:47',
+    '2026-08-19 16:13:29',
+    1,
     1
   );
 
@@ -325,7 +370,7 @@ VALUES
   (14, 3.00, 'tsp', NULL, 2, 8),
   (15, NULL, 'to taste', NULL, 2, 6),
   (16, 1.00, 'piece', NULL, 2, 14),
-  (17, 2.00, 'cloves', NULL, 2, 15),
+  (17, 2.00, 'clove', NULL, 2, 15),
   (18, 2.00, 'tbsp', NULL, 2, 16),
   (19, 2.00, 'tbsp', NULL, 2, 7),
   (20, 60.00, 'ml', NULL, 2, 17),
@@ -338,11 +383,11 @@ VALUES
   (27, 60.00, 'g', NULL, 2, 24),
   (28, 250.00, 'g', 'wheat', 3, 3),
   (29, 250.00, 'g', NULL, 3, 25),
-  (30, 2.00, 'pieces', NULL, 3, 26),
+  (30, 2.00, 'piece', NULL, 3, 26),
   (31, NULL, 'as needed', NULL, 3, 17),
   (32, 500.00, 'g', 'floury', 3, 27),
   (33, 1.00, 'bunch', NULL, 3, 19),
-  (34, 2.00, 'cloves', NULL, 3, 15),
+  (34, 2.00, 'clove', NULL, 3, 15),
   (35, 1.00, 'piece', 'small', 3, 28),
   (36, NULL, 'as needed', NULL, 3, 29),
   (37, 100.00, 'g', 'all-purpose', 4, 3),
@@ -354,10 +399,10 @@ VALUES
   (43, 500.00, 'g', NULL, 4, 34),
   (44, 0.50, 'piece', NULL, 4, 35),
   (45, 40.00, 'g', 'slivered', 4, 36),
-  (46, 1.20, 'l', NULL, 5, 17),
+  (46, 1200.00, 'ml', NULL, 5, 17),
   (47, 300.00, 'g', 'boneless soup beef', 5, 37),
   (48, 1.00, 'piece', NULL, 5, 28),
-  (49, 2.00, 'cloves', NULL, 5, 15),
+  (49, 2.00, 'clove', NULL, 5, 15),
   (50, 300.00, 'g', 'fresh', 5, 38),
   (51, 300.00, 'g', 'floury or mainly waxy', 5, 27),
   (52, 150.00, 'g', NULL, 5, 39),
@@ -371,7 +416,12 @@ VALUES
   (60, 1.00, 'tbsp', NULL, 5, 45),
   (61, 1.00, 'bunch', NULL, 5, 19),
   (62, 100.00, 'g', NULL, 5, 46),
-  (63, 4.00, 'slices', 'whole grain', 5, 47);
+  (63, 4.00, 'slice', 'whole grain', 5, 47),
+  (64, 3.00, 'piece', NULL, 6, 34),
+  (65, 300.00, 'g', NULL, 6, 36),
+  (66, 1.00, 'cup', NULL, 6, 32),
+  (67, 3.00, 'tsp', NULL, 6, 26),
+  (68, 2.00, 'piece', NULL, 7, 12);
 
 -- --------------------------------------------------------
 --
@@ -411,7 +461,7 @@ VALUES
     'Aaa',
     'Aaa',
     0,
-    3
+    1
   ),
   (
     2,
@@ -422,6 +472,26 @@ VALUES
     'Aaa',
     0,
     1
+  ),
+  (
+    3,
+    'ccc@c.at',
+    '[]',
+    '$2y$13$cCHLq29JvJsoLrFEg3sn2OCTF2mmbOdaRbmaVW9K0/V5UExJqPYoe',
+    'Ccc',
+    'Ccc',
+    0,
+    NULL
+  ),
+  (
+    4,
+    'ddd@d.at',
+    '[]',
+    '$2y$13$Ewkm5e2Z2LHAKj5cGIJo6ON0i0QvS1Nrdz2sg1.x294mgb9CDDWme',
+    'Dd',
+    'Ddd',
+    1,
+    NULL
   );
 
 --
@@ -465,7 +535,12 @@ ALTER TABLE
 ADD
   PRIMARY KEY (`id`),
 ADD
-  KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`, `available_at`, `delivered_at`, `id`);
+  KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (
+    `queue_name`,
+    `available_at`,
+    `delivered_at`,
+    `id`
+  );
 
 --
 -- Indizes für die Tabelle `planned_meal`
@@ -559,7 +634,8 @@ MODIFY
 ALTER TABLE
   `planned_meal`
 MODIFY
-  `id` int NOT NULL AUTO_INCREMENT;
+  `id` int NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 8;
 
 --
 -- AUTO_INCREMENT für Tabelle `recipe`
@@ -568,7 +644,7 @@ ALTER TABLE
   `recipe`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 6;
+  AUTO_INCREMENT = 8;
 
 --
 -- AUTO_INCREMENT für Tabelle `recipe_ingredient`
@@ -577,7 +653,7 @@ ALTER TABLE
   `recipe_ingredient`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 64;
+  AUTO_INCREMENT = 71;
 
 --
 -- AUTO_INCREMENT für Tabelle `user`
@@ -586,7 +662,7 @@ ALTER TABLE
   `user`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 3;
+  AUTO_INCREMENT = 5;
 
 --
 -- Constraints der exportierten Tabellen

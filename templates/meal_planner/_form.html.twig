@@ -1,0 +1,10 @@
+{{ form_start(form) }}
+
+{{ form_row(form.scheduledFor) }}
+{{ form_row(form.mealTime) }}
+
+<button class="btn">
+    {{ button_label|default('Save') }}
+</button>
+
+{{ form_end(form) }}

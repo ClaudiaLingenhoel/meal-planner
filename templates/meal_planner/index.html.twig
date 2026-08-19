@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Weekly Meal Planner
+{% endblock %}
+
+{% block body %}
+
+    {% set weekDays = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+    ] %}
+
+    {% set mealTimes = ['breakfast', 'lunch', 'dinner', 'snack'] %}
+
+    <h1>Weekly Meal Planner</h1>
+
+    <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
+
+    {% for day in weekDays %}
+
+        <h2>{{ day }}</h2>
+
+        {% for mealTime in mealTimes %}
+
+            <h3>{{ mealTime|capitalize }}</h3>
+
+            {% for plannedMeal in plannedMeals %}
+
+                {% if plannedMeal.scheduledFor|date('l') == day and plannedMeal.mealTime.value == mealTime %}
+
+                    {{ plannedMeal.recipe.title }}
+
+                    <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
+                        Edit
+                    </a>
+
+                    {{ include('meal_planner/_delete_form.html.twig') }}
+
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
