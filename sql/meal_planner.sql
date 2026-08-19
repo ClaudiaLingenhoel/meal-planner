@@ -29,7 +29,7 @@ SET
 --
 -- Datenbank: `meal_planner`
 --
-CREATE DATABASE IF NOT EXISTS `meal_planner` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS `meal_planner` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE `meal_planner`;
 
@@ -41,7 +41,7 @@ CREATE TABLE `dietary_type` (
   `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `restriction_level` int NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `dietary_type`
@@ -61,7 +61,7 @@ CREATE TABLE `doctrine_migration_versions` (
   `version` varchar(191) NOT NULL,
   `executed_at` datetime DEFAULT NULL,
   `execution_time` int DEFAULT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `doctrine_migration_versions`
@@ -92,7 +92,7 @@ VALUES
 CREATE TABLE `ingredient` (
   `id` int NOT NULL,
   `name` varchar(255) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `ingredient`
@@ -160,7 +160,7 @@ CREATE TABLE `messenger_messages` (
   `created_at` datetime NOT NULL,
   `available_at` datetime NOT NULL,
   `delivered_at` datetime DEFAULT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -172,7 +172,7 @@ CREATE TABLE `planned_meal` (
   `meal_time` varchar(255) NOT NULL,
   `user_id` int NOT NULL,
   `recipe_id` int NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -191,7 +191,7 @@ CREATE TABLE `recipe` (
   `updated_at` datetime DEFAULT NULL,
   `dietary_type_id` int NOT NULL,
   `creator_id` int NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `recipe`
@@ -294,7 +294,7 @@ CREATE TABLE `recipe_ingredient` (
   `specification` varchar(255) DEFAULT NULL,
   `recipe_id` int NOT NULL,
   `ingredient_id` int NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `recipe_ingredient`
@@ -386,7 +386,7 @@ CREATE TABLE `user` (
   `last_name` varchar(255) NOT NULL,
   `is_blocked` tinyint NOT NULL,
   `dietary_type_id` int DEFAULT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `user`
