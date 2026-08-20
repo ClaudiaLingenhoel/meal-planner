@@ -3,13 +3,11 @@
 namespace App\Form;
 
 use App\Entity\PlannedMeal;
-use App\Entity\Recipe;
-use App\Entity\User;
 use App\Enum\MealTime;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -24,6 +22,11 @@ class PlannedMealType extends AbstractType
             ->add('mealTime', EnumType::class, [
                 'class' => MealTime::class,
                 'placeholder' => 'Select meal time',
+            ])
+            ->add('servings', IntegerType::class, [
+                'attr' => [
+                    'min' => 1,
+                ]
             ])
         ;
     }

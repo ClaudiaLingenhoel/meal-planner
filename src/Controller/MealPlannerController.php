@@ -79,6 +79,7 @@ final class MealPlannerController extends AbstractController
 
         $plannedMeal->setRecipe($recipe);
         $plannedMeal->setUser($this->getUser());
+        $plannedMeal->setServings($recipe->getServings());
 
         $form = $this->createForm(PlannedMealType::class, $plannedMeal);
         $form->handleRequest($request);

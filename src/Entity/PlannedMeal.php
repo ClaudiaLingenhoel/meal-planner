@@ -7,6 +7,7 @@ use App\Repository\PlannedMealRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PlannedMealRepository::class)]
 #[ORM\UniqueConstraint(
@@ -34,10 +35,17 @@ class PlannedMeal
     private ?Recipe $recipe = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank]
     private ?\DateTime $scheduledFor = null;
 
     #[ORM\Column(enumType: MealTime::class)]
+    #[Assert\NotNull]
     private ?MealTime $mealTime = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Range(min: 1, max: 100)]
+    private ?int $servings = null;
 
     public function getId(): ?int
     {
@@ -88,6 +96,18 @@ class PlannedMeal
     public function setMealTime(MealTime $mealTime): static
     {
         $this->mealTime = $mealTime;
+
+        return $this;
+    }
+
+    public function getServings(): ?int
+    {
+        return $this->servings;
+    }
+
+    public function setServings(int $servings): static
+    {
+        $this->servings = $servings;
 
         return $this;
     }

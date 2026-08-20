@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Erstellungszeit: 19. Aug 2026 um 18:54
+-- Erstellungszeit: 20. Aug 2026 um 14:32
 -- Server-Version: 8.0.44
 -- PHP-Version: 8.3.30
 SET
@@ -83,6 +83,11 @@ VALUES
     'DoctrineMigrations\\Version20260818190333',
     '2026-08-18 19:03:37',
     19
+  ),
+  (
+    'DoctrineMigrations\\Version20260820135223',
+    '2026-08-20 13:52:30',
+    30
   );
 
 -- --------------------------------------------------------
@@ -171,7 +176,8 @@ CREATE TABLE `planned_meal` (
   `scheduled_for` date NOT NULL,
   `meal_time` varchar(255) NOT NULL,
   `user_id` int NOT NULL,
-  `recipe_id` int NOT NULL
+  `recipe_id` int NOT NULL,
+  `servings` int NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
@@ -183,13 +189,12 @@ INSERT INTO
     `scheduled_for`,
     `meal_time`,
     `user_id`,
-    `recipe_id`
+    `recipe_id`,
+    `servings`
   )
 VALUES
-  (1, '2026-08-20', 'breakfast', 1, 1),
-  (4, '2026-08-20', 'lunch', 1, 1),
-  (7, '2026-08-17', 'breakfast', 1, 3),
-  (6, '2026-08-17', 'dinner', 1, 5);
+  (13, '2026-08-17', 'breakfast', 1, 1, 5),
+  (14, '2026-08-17', 'lunch', 1, 1, 99);
 
 -- --------------------------------------------------------
 --
@@ -237,9 +242,9 @@ VALUES
     'Preheat the oven to 175°C. Grease and line a baking pan with parchment paper. Finely grate the zucchini without peeling or squeezing it and mash the banana. In a large bowl, combine flour, cocoa powder, baking powder, salt and sugar. Add the neutral oil, plant-based milk, vanilla extract, mashed banana and grated zucchini. Mix only until combined. Spread the batter evenly in the prepared pan and sprinkle with vegan chocolate chips if using. Bake for about 35 minutes. Let the brownies cool in the pan for about 15 minutes, then remove them and allow them to cool completely before cutting.',
     'https://biancazapatka.com/en/vegan-zucchini-brownies/',
     15,
-    NULL,
+    'brownies-sm-6a86b1fa3fda1.jpg',
     '2026-08-18 21:15:53',
-    NULL,
+    '2026-08-20 07:51:22',
     1,
     1
   ),
@@ -251,9 +256,9 @@ VALUES
     'Preheat the oven to 220°C and line a baking tray with parchment paper. Combine the cooked rice with red Thai curry paste, oil and a little salt, then spread it evenly over the tray. Bake for about 30 minutes until golden and crispy, turning the rice halfway through. For the dressing, remove the seeds from the chili and finely chop it. Press or finely chop the garlic and combine both with tamari, sugar, water and freshly squeezed lime juice. Dice the cucumber and roughly chop the parsley, cilantro, mint and peanuts. Let the crispy rice cool slightly, then combine it with the cucumber, herbs, peanuts, crispy fried onions and dressing. Serve immediately, with additional lime wedges if desired.',
     'https://biancazapatka.com/en/crispy-rice-salad/',
     4,
-    NULL,
+    'rice-sm-6a86b20b6851a.jpg',
     '2026-08-18 21:15:53',
-    '2026-08-19 14:39:50',
+    '2026-08-20 11:18:51',
     1,
     2
   ),
@@ -265,9 +270,9 @@ VALUES
     'Combine the wheat flour and rye flour with a little salt, the eggs and enough water to form a smooth pasta dough. Cover the dough and let it rest for about 2 hours. Meanwhile, cook the potatoes until soft, allow them to cool slightly and press or mash them. Finely chop the onion and garlic and sauté them in a generous amount of butter until translucent. Add them to the potatoes. Finely chop the parsley and mix it into the filling. Roll the rested dough out thinly on a floured surface and cut out round pieces. Place some filling in the center of each round, fold the dough over and press the edges firmly together with a fork. Cook the filled dumplings in boiling salted water for about 2–3 minutes, then drain. Serve with melted butter.',
     'https://www.chefkoch.de/rezepte/3133271466707231/Osttiroler-Schlipfkrapfen.html',
     4,
-    NULL,
+    'schlipf-sm-6a86b21807e50.jpg',
     '2026-08-18 21:15:53',
-    NULL,
+    '2026-08-20 07:51:52',
     2,
     1
   ),
@@ -279,9 +284,9 @@ VALUES
     'Preheat the oven to 200°C. For the crumble topping, combine flour, rolled oats, salt, brown sugar and cinnamon in a bowl. Cut the vegan butter into small cubes, add it to the dry ingredients and work everything together until coarse crumbs form. Wash and core the apples, cut them into cubes and toss them with freshly squeezed lemon juice. Transfer the apples to a baking dish. Spread the crumble mixture evenly over the apples and add slivered almonds and a little extra brown sugar if desired. Bake for about 30 minutes until the topping is golden brown. Allow the crumble to cool briefly before serving.',
     'https://biancazapatka.com/en/vegan-apple-crumble/',
     6,
-    NULL,
+    'crumble-sm-6a86b239c70e0.jpg',
     '2026-08-18 21:15:53',
-    NULL,
+    '2026-08-20 07:52:25',
     1,
     2
   ),
@@ -293,9 +298,9 @@ VALUES
     'Bring the water to a boil in a large pot, reduce the heat and add the beef in one piece. Cover and simmer for about 1 hour, removing any foam that collects on the surface. Meanwhile, finely dice the onion and chop the garlic. Peel the beetroot, potatoes and carrots and cut them into roughly 1–2 cm pieces. Wash the cabbage, remove any tough core and slice it into thin strips. Cut the tomatoes into pieces. Remove the cooked beef from the broth and cut it into bite-sized pieces. Heat the canola oil in a second large pot and sauté the onion, garlic and tomatoes. Add the beetroot, potatoes, carrots and cabbage and briefly sauté them as well. Sprinkle the flour over the vegetables, stir well and pour in the beef broth. Add the beef, bay leaf, salt and pepper and simmer for about 45 minutes, until the vegetables are tender. Finely chop the parsley. Remove the bay leaf, season the soup with additional salt, pepper and lemon juice to taste, and serve topped with sour cream and parsley, with whole grain bread on the side.',
     'https://www.einfachkochen.de/rezepte/borschtsch-soo-wuerzig-lecker',
     1,
-    NULL,
+    'borscht-sm-6a86b24b566ec.jpg',
     '2026-08-18 21:15:53',
-    '2026-08-19 16:33:22',
+    '2026-08-20 07:52:43',
     3,
     1
   ),
@@ -459,7 +464,7 @@ VALUES
     '[\"ROLE_ADMIN\"]',
     '$2y$13$ptYMAboDmel.hZwEfhwng.p6Q14PzDbCmdh88OrHsgaljo2LuWEHm',
     'Aaa',
-    'Aaa',
+    'BbbAaa',
     0,
     1
   ),
@@ -476,12 +481,12 @@ VALUES
   (
     3,
     'ccc@c.at',
-    '[]',
+    '[\"ROLE_ADMIN\"]',
     '$2y$13$cCHLq29JvJsoLrFEg3sn2OCTF2mmbOdaRbmaVW9K0/V5UExJqPYoe',
     'Ccc',
     'Ccc',
     0,
-    NULL
+    1
   ),
   (
     4,
@@ -492,6 +497,16 @@ VALUES
     'Ddd',
     1,
     NULL
+  ),
+  (
+    5,
+    'fff@f.at',
+    '[\"ROLE_ADMIN\"]',
+    '$2y$13$1ZDhqQWErBRbLI0M4wKLBO6LjLpUl0fwzVwaR7Q8ls6NhxNMNESCO',
+    'bla',
+    'bla',
+    0,
+    2
   );
 
 --
@@ -635,7 +650,7 @@ ALTER TABLE
   `planned_meal`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 8;
+  AUTO_INCREMENT = 15;
 
 --
 -- AUTO_INCREMENT für Tabelle `recipe`
@@ -653,7 +668,7 @@ ALTER TABLE
   `recipe_ingredient`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 71;
+  AUTO_INCREMENT = 74;
 
 --
 -- AUTO_INCREMENT für Tabelle `user`
@@ -662,7 +677,7 @@ ALTER TABLE
   `user`
 MODIFY
   `id` int NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 5;
+  AUTO_INCREMENT = 6;
 
 --
 -- Constraints der exportierten Tabellen
