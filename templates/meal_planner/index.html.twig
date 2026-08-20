@@ -18,6 +18,12 @@
 
     {% set mealTimes = ['breakfast', 'lunch', 'dinner', 'snack'] %}
 
+    {% if adminView %}
+        <div class="alert alert-info">
+            Admin view: Weekly meal plan for {{ viewedUser.email }}
+        </div>
+    {% endif %}
+
     <h1>Weekly Meal Planner</h1>
 
     <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
@@ -36,12 +42,14 @@
 
                     {{ plannedMeal.recipe.title }}
 
-                    <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
-                        Edit
-                    </a>
+                    {% if not adminView %}
 
-                    {{ include('meal_planner/_delete_form.html.twig') }}
+                        <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
+                            Edit
+                        </a>
 
+                        {{ include('meal_planner/_delete_form.html.twig') }}
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         {% endfor %}

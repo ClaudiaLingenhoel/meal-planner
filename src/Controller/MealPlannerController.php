@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\User;
 
 #[Route('/planner', name: 'app_meal_planner_')]
 final class MealPlannerController extends AbstractController
@@ -32,6 +33,30 @@ final class MealPlannerController extends AbstractController
             'plannedMeals' => $plannedMeals,
             'startOfWeek' => $startOfWeek,
             'endOfWeek' => $endOfWeek,
+            'adminView' => false,
+        ]);
+    }
+
+    #[Route('/admin/{id}', name: 'admin_view', methods: ['GET'])]
+    public function adminView(User $user, PlannedMealRepository $plannedMealRepository): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $startOfWeek = new DateTime('monday this week');
+        $endOfWeek = new DateTime('sunday this week');
+
+        $plannedMeals = $plannedMealRepository->findForUserAndWeek(
+            $user,
+            $startOfWeek,
+            $endOfWeek
+        );
+
+        return $this->render('meal_planner/index.html.twig', [
+            'plannedMeals' => $plannedMeals,
+            'startOfWeek' => $startOfWeek,
+            'endOfWeek' => $endOfWeek,
+            'viewedUser' => $user,
+            'adminView' => true,
         ]);
     }
 

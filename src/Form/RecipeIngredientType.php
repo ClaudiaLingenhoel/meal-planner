@@ -7,6 +7,7 @@ use App\Entity\RecipeIngredient;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +21,14 @@ class RecipeIngredientType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Select ingredient'
             ])
-            ->add('quantity')
+            ->add('quantity', NumberType::class, [
+                'scale' => 2,
+                'attr' => [
+                    'min' => 0,
+                    'step' => '0.01',
+                ],
+                'required' => false,
+            ])
             ->add('unit', ChoiceType::class, [
                 'choices' => [
                     'g' => 'g',

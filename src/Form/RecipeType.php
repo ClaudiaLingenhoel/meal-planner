@@ -11,6 +11,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,9 +21,13 @@ class RecipeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
-            ->add('cookingTimeMinutes')
-            ->add('shortDescription')
+            ->add('title', TextType::class)
+            ->add('cookingTimeMinutes', IntegerType::class, [
+                'attr' => [
+                    'min' => 1,
+                ]
+            ])
+            ->add('shortDescription', TextType::class)
             ->add('instructions', TextareaType::class, [
                 'attr' => [
                     'rows' => 10,
@@ -30,7 +36,11 @@ class RecipeType extends AbstractType
             ->add('source', UrlType::class, [
                 'required' => false,
             ])
-            ->add('servings')
+            ->add('servings', IntegerType::class, [
+                'attr' => [
+                    'min' => 1,
+                ]
+            ])
             ->add('image', FileType::class, [
                 'label' => 'Upload image',
                 'mapped' => false,
