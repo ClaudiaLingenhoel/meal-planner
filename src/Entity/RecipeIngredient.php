@@ -5,11 +5,17 @@ namespace App\Entity;
 use App\Repository\RecipeIngredientRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: RecipeIngredientRepository::class)]
 #[ORM\UniqueConstraint(
     name: 'unique_recipe_ingredient',
     fields: ['recipe', 'ingredient']
+)]
+#[UniqueEntity(
+    fields: ['recipe', 'ingredient'],
+    message: 'This ingredient is already added to this recipe.',
+    errorPath: 'ingredient'
 )]
 class RecipeIngredient
 {

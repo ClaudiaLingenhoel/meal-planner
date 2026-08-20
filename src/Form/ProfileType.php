@@ -16,7 +16,6 @@ class ProfileType extends AbstractType
         $builder
             ->add('firstName')
             ->add('lastName')
-            ->add('email')
             ->add('dietaryType', EntityType::class, [
                 'class' => DietaryType::class,
                 'choice_label' => 'name',

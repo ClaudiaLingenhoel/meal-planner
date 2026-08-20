@@ -11,6 +11,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Image</th>
                 <th>Title</th>
                 <th>Minutes</th>
                 <th>Description</th>
@@ -25,11 +26,21 @@
             {% for recipe in recipes %}
                 <tr>
                     <td>{{ recipe.id }}</td>
+                    <td>
+                        <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ recipe.title }}" style="width: 120px; height: auto;">
+                    </td>
+
                     <td>{{ recipe.title }}</td>
                     <td>{{ recipe.cookingTimeMinutes }}</td>
                     <td>{{ recipe.shortDescription }}</td>
                     <td>{{ recipe.servings }}</td>
-                    <td>{{ recipe.source }}</td>
+                    <td>
+                        {% if recipe.source %}
+                            <a href="{{ recipe.source }}" target="_blank" rel="noopener noreferrer">
+                                Source
+                            </a>
+                        {% endif %}
+                    </td>
                     <td>{{ recipe.createdAt ? recipe.createdAt|date('d.m.Y H:i') : '' }}</td>
                     <td>{{ recipe.updatedAt ? recipe.updatedAt|date('d.m.Y H:i') : '' }}</td>
                     <td>

@@ -10,6 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class RecipeType extends AbstractType
 {
@@ -24,9 +27,26 @@ class RecipeType extends AbstractType
                     'rows' => 10,
                 ],
             ])
-            ->add('source')
+            ->add('source', UrlType::class, [
+                'required' => false,
+            ])
             ->add('servings')
-            ->add('image')
+            ->add('image', FileType::class, [
+                'label' => 'Upload image',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new Assert\File(
+                        maxSize: '2048k',
+                        extensions: [
+                            'png',
+                            'jpg',
+                            'jpeg',
+                        ],
+                        extensionsMessage: 'Please upload a valid image (PNG, JPG, JPEG).',
+                    )
+                ]
+            ])
             ->add('dietaryType', EntityType::class, [
                 'class' => DietaryType::class,
                 'choice_label' => 'name',

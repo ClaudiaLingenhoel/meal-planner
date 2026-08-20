@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\FileUploader;
 
 #[Route('/recipe', name: 'app_recipe_')]
 final class RecipeController extends AbstractController
@@ -38,7 +39,7 @@ final class RecipeController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $recipe = new Recipe();
         $recipe->setCreator($this->getUser());
@@ -50,6 +51,13 @@ final class RecipeController extends AbstractController
 
             $today = new DateTime("now");
             $recipe->setCreatedAt($today);
+
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $newFilename = $fileUploader->upload($imageFile);
+                $recipe->setImage($newFilename);
+            }
 
             $entityManager->persist($recipe);
             $entityManager->flush();
@@ -73,7 +81,7 @@ final class RecipeController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         if (
             $recipe->getCreator() !== $this->getUser()
@@ -82,7 +90,6 @@ final class RecipeController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
 
@@ -90,6 +97,21 @@ final class RecipeController extends AbstractController
 
             $today = new DateTime("now");
             $recipe->setUpdatedAt($today);
+
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $oldImage = $recipe->getImage();
+
+                if ($oldImage) {
+                    $oldPath = $fileUploader->getTargetDirectory() . '/' . $oldImage;
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+                $newFilename = $fileUploader->upload($imageFile);
+                $recipe->setImage($newFilename);
+            }
 
             $entityManager->flush();
 
@@ -104,7 +126,7 @@ final class RecipeController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         if (
             $recipe->getCreator() !== $this->getUser()
@@ -114,6 +136,14 @@ final class RecipeController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
+            $image = $recipe->getImage();
+
+            if ($image) {
+                $imagePath = $fileUploader->getTargetDirectory() . '/' . $image;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
             $entityManager->remove($recipe);
             $entityManager->flush();
         }

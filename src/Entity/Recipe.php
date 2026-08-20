@@ -60,6 +60,7 @@ class Recipe
     /**
      * @var Collection<int, RecipeIngredient>
      */
+    #[Assert\Valid]
     #[ORM\OneToMany(targetEntity: RecipeIngredient::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
     private Collection $recipeIngredients;
 

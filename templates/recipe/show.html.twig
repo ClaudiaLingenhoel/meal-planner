@@ -14,6 +14,12 @@
                 <td>{{ recipe.id }}</td>
             </tr>
             <tr>
+                <th>Image</th>
+                <td>
+                    <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ recipe.title }}" style="width: 120px; height: auto;">
+                </td>
+            </tr>
+            <tr>
                 <th>Title</th>
                 <td>{{ recipe.title }}</td>
             </tr>
