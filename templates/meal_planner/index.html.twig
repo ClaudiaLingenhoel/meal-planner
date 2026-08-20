@@ -28,30 +28,81 @@
 
     <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
 
-    {% for day in weekDays %}
+    {% if adminView %}
+        <a href="{{ path('app_meal_planner_admin_view', {
+            id: viewedUser.id,
+            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
+            }) }}">
+            Previous Week
+        </a>
 
-        <h2>{{ day }}</h2>
+        <a href="{{ path('app_meal_planner_admin_view', {id: viewedUser.id}) }}">
+            Current Week
+        </a>
 
-        {% for mealTime in mealTimes %}
+        <a href="{{ path('app_meal_planner_admin_view', {
+            id: viewedUser.id,
+            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
+            }) }}">
+            Next Week
+        </a>
+    {% else %}
 
-            <h3>{{ mealTime|capitalize }}</h3>
+        <a href="{{ path('app_meal_planner_index', {
+            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
+            }) }}">
+            Previous Week
+        </a>
 
-            {% for plannedMeal in plannedMeals %}
+        <a href="{{ path('app_meal_planner_index') }}">
+            Current Week
+        </a>
 
-                {% if plannedMeal.scheduledFor|date('l') == day and plannedMeal.mealTime.value == mealTime %}
+        <a href="{{ path('app_meal_planner_index', {
+            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
+            }) }}">
+            Next Week
+        </a>
+    {% endif %}
 
-                    {{ plannedMeal.recipe.title }}
+    <div class="weekly-planner">
+        {% for i in 0..6 %}
+            {% set currentDay = startOfWeek|date_modify('+' ~ i ~ ' days') %}
 
-                    {% if not adminView %}
+            <section class="day-column">
+                <div class="day-header">
+                    <h2>{{ currentDay|date('l') }}</h2>
+                    <p>{{ currentDay|date('d.m.y') }}</p>
+                </div>
+                {% for mealTime in mealTimes %}
+                    <div class="meal-slot">
 
-                        <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
-                            Edit
-                        </a>
+                        <h3>{{ mealTime|capitalize }}</h3>
 
-                        {{ include('meal_planner/_delete_form.html.twig') }}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+                        {% for plannedMeal in plannedMeals %}
+                            {% if plannedMeal.scheduledFor|date('Y-m-d') == currentDay|date('Y-m-d') and plannedMeal.mealTime.value == mealTime %}
+
+                                <div class="card mb-2">
+                                    <div class="card-body p-2">
+
+                                        <strong>{{ plannedMeal.recipe.title }}</strong>
+
+                                        {% if not adminView %}
+                                            <div class="mt-2">
+                                                <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
+                                                    Edit
+                                                </a>
+
+                                                {{ include('meal_planner/_delete_form.html.twig') }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </section>
         {% endfor %}
-    {% endfor %}
+    </div>
 {% endblock %}

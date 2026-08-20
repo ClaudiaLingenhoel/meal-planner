@@ -18,10 +18,16 @@ use App\Entity\User;
 final class MealPlannerController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(PlannedMealRepository $plannedMealRepository): Response
+    public function index(Request $request, PlannedMealRepository $plannedMealRepository): Response
     {
-        $startOfWeek = new DateTime('monday this week');
-        $endOfWeek = new DateTime('sunday this week');
+        $week = $request->query->get('week');
+        if ($week) {
+            $startOfWeek = new DateTime($week);
+        } else {
+            $startOfWeek = new DateTime('monday this week');
+        }
+
+        $endOfWeek = (clone $startOfWeek)->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
             $this->getUser(),
@@ -38,12 +44,18 @@ final class MealPlannerController extends AbstractController
     }
 
     #[Route('/admin/{id}', name: 'admin_view', methods: ['GET'])]
-    public function adminView(User $user, PlannedMealRepository $plannedMealRepository): Response
+    public function adminView(Request $request, User $user, PlannedMealRepository $plannedMealRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $startOfWeek = new DateTime('monday this week');
-        $endOfWeek = new DateTime('sunday this week');
+        $week = $request->query->get('week');
+        if ($week) {
+            $startOfWeek = new DateTime($week);
+        } else {
+            $startOfWeek = new DateTime('monday this week');
+        }
+
+        $endOfWeek = (clone $startOfWeek)->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
             $user,
