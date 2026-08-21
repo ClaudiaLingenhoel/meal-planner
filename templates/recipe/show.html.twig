@@ -31,9 +31,18 @@
                 <th>ShortDescription</th>
                 <td>{{ recipe.shortDescription }}</td>
             </tr>
+
             <tr>
                 <th>Instructions</th>
                 <td>{{ recipe.instructions }}</td>
+            </tr>
+
+            <tr>
+                <th>Servings</th>
+                <td>
+                    <label for="servings">Servings</label>
+                    <input type="number" id="servings" min="1" max="99" value="{{ recipe.servings }}" data-original-servings="{{ recipe.servings }}">
+                </td>
             </tr>
 
             <tr>
@@ -43,11 +52,17 @@
                         {% for recipeIngredient in recipe.recipeIngredients %}
                             <li>
                                 {% if recipeIngredient.quantity is not null %}
-                                    {{ recipeIngredient.quantity }}
+                                    <span class="ingredient-amount" data-quantity="{{ recipeIngredient.quantity }}" data-unit="{{ recipeIngredient.unit }}">
+                                        <span class="ingredient-quantity">
+                                            {{ recipeIngredient.quantity }}
+                                        </span>
+                                        <span class="ingredient-unit">
+                                            {{ recipeIngredient.unit }}
+                                        </span>
+                                    </span>
+                                {% else %}
+                                    {{ recipeIngredient.unit }}
                                 {% endif %}
-
-                                {{ recipeIngredient.unit }}
-
                                 {{ recipeIngredient.ingredient.name }}
 
                                 {% if recipeIngredient.specification %}
@@ -65,14 +80,7 @@
                 <th>Source</th>
                 <td>{{ recipe.source }}</td>
             </tr>
-            <tr>
-                <th>Servings</th>
-                <td>{{ recipe.servings }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>{{ recipe.image }}</td>
-            </tr>
+
             <tr>
                 <th>CreatedAt</th>
                 <td>{{ recipe.createdAt ? recipe.createdAt|date('Y-m-d H:i:s') : '' }}</td>

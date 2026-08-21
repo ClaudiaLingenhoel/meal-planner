@@ -11,4 +11,4 @@ import "./js/recipe-ingredients.js";
 
 import "./js/shopping-list.js";
 
-console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");
+import "./js/servings.js";

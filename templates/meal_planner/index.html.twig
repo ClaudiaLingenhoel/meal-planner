@@ -85,7 +85,13 @@
                                 <div class="card mb-2">
                                     <div class="card-body p-2">
 
+                                        <a href="{{ path('app_recipe_show', {'id': plannedMeal.recipe.id}) }}">
+                                            <img src="{{ asset(plannedMeal.recipe.image ? 'pictures/' ~ plannedMeal.recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ plannedMeal.recipe.title }}" style="width: 120px; height: auto;">
+                                        </a>
+
                                         <strong>{{ plannedMeal.recipe.title }}</strong>
+
+                                        Servings: {{ plannedMeal.servings }}
 
                                         {% if not adminView %}
                                             <div class="mt-2">
