@@ -41,6 +41,14 @@ class RecipeType extends AbstractType
                     'min' => 1,
                 ]
             ])
+            ->add('caloriesPerServing', IntegerType::class, [
+                'label' => 'Calories per serving',
+                'required' => false,
+                'attr' => [
+                    'min' => 1,
+                    'placeholder' => 'Optional',
+                ],
+            ])
             ->add('image', FileType::class, [
                 'label' => 'Upload image',
                 'mapped' => false,

@@ -4,15 +4,15 @@ namespace App\Controller;
 
 use App\Entity\PlannedMeal;
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Form\PlannedMealType;
 use App\Repository\PlannedMealRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Entity\User;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
@@ -22,14 +22,8 @@ final class MealPlannerController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(Request $request, PlannedMealRepository $plannedMealRepository): Response
     {
-        $week = $request->query->get('week');
-        if ($week) {
-            $startOfWeek = new DateTime($week);
-        } else {
-            $startOfWeek = new DateTime('monday this week');
-        }
-
-        $endOfWeek = (clone $startOfWeek)->modify('+6 days');
+        $startOfWeek = $this->getStartOfWeek($request);
+        $endOfWeek = $startOfWeek->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
             $this->getUser(),
@@ -49,14 +43,10 @@ final class MealPlannerController extends AbstractController
     #[Route('/admin/{id}', name: 'admin_view', methods: ['GET'])]
     public function adminView(Request $request, User $user, PlannedMealRepository $plannedMealRepository): Response
     {
-        $week = $request->query->get('week');
-        if ($week) {
-            $startOfWeek = new DateTime($week);
-        } else {
-            $startOfWeek = new DateTime('monday this week');
-        }
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $endOfWeek = (clone $startOfWeek)->modify('+6 days');
+        $startOfWeek = $this->getStartOfWeek($request);
+        $endOfWeek = $startOfWeek->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
             $user,
@@ -135,5 +125,21 @@ final class MealPlannerController extends AbstractController
         }
 
         return $this->redirectToRoute('app_meal_planner_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getStartOfWeek(Request $request): DateTimeImmutable
+    {
+        $week = $request->query->getString('week');
+        if ('' === $week) {
+            return new DateTimeImmutable('monday this week');
+        }
+
+        $selectedDate = DateTimeImmutable::createFromFormat('!Y-m-d', $week);
+        $errors = DateTimeImmutable::getLastErrors();
+        if (false === $selectedDate || (false !== $errors && (0 < $errors['warning_count'] || 0 < $errors['error_count']))) {
+            return new DateTimeImmutable('monday this week');
+        }
+
+        return $selectedDate->modify('monday this week');
     }
 }

@@ -7,7 +7,75 @@
 {% block body %}
     <h1>{{ pageTitle }}</h1>
 
-    <table class="table">
+    <form method="get" class="card card-body mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-12 col-lg-4">
+                <label for="recipe-search" class="form-label">Search</label>
+                <input
+                    type="search"
+                    id="recipe-search"
+                    name="search"
+                    value="{{ filters.search }}"
+                    class="form-control"
+                    placeholder="Title, description, ingredient..."
+                >
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="dietary-type" class="form-label">Suitable for</label>
+                <select id="dietary-type" name="dietaryType" class="form-select">
+                    <option value="">All dietary types</option>
+                    {% for dietaryType in dietaryTypes %}
+                        <option value="{{ dietaryType.id }}"{% if filters.dietaryType == dietaryType.id %} selected{% endif %}>
+                            {{ dietaryType.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="max-time" class="form-label">Cooking time</label>
+                <select id="max-time" name="maxTime" class="form-select">
+                    <option value="">Any duration</option>
+                    {% for minutes in [15, 30, 45, 60, 90, 120] %}
+                        <option value="{{ minutes }}"{% if filters.maxTime == minutes %} selected{% endif %}>Up to {{ minutes }} min</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="max-calories" class="form-label">Calories</label>
+                <select id="max-calories" name="maxCalories" class="form-select">
+                    <option value="">Any calories</option>
+                    {% for calories in [200, 400, 600, 800, 1000] %}
+                        <option value="{{ calories }}"{% if filters.maxCalories == calories %} selected{% endif %}>Up to {{ calories }} kcal</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <label for="recipe-sort" class="form-label">Sort by</label>
+                <select id="recipe-sort" name="sort" class="form-select">
+                    <option value="newest"{% if filters.sort == 'newest' %} selected{% endif %}>Newest first</option>
+                    <option value="oldest"{% if filters.sort == 'oldest' %} selected{% endif %}>Oldest first</option>
+                    <option value="title_asc"{% if filters.sort == 'title_asc' %} selected{% endif %}>Title A–Z</option>
+                    <option value="title_desc"{% if filters.sort == 'title_desc' %} selected{% endif %}>Title Z–A</option>
+                    <option value="time_asc"{% if filters.sort == 'time_asc' %} selected{% endif %}>Quickest first</option>
+                    <option value="time_desc"{% if filters.sort == 'time_desc' %} selected{% endif %}>Longest first</option>
+                    <option value="calories_asc"{% if filters.sort == 'calories_asc' %} selected{% endif %}>Lowest calories</option>
+                    <option value="calories_desc"{% if filters.sort == 'calories_desc' %} selected{% endif %}>Highest calories</option>
+                </select>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Apply filters</button>
+                <a href="{{ path(mineOnly ? 'app_recipe_mine' : 'app_recipe_index') }}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+    <table class="table align-middle">
         <thead>
             <tr>
                 <th>Id</th>
@@ -16,6 +84,8 @@
                 <th>Minutes</th>
                 <th>Description</th>
                 <th>Servings</th>
+                <th>Dietary type</th>
+                <th>Calories</th>
                 <th>Source</th>
                 <th>Created</th>
                 <th>Updated</th>
@@ -34,6 +104,8 @@
                     <td>{{ recipe.cookingTimeMinutes }}</td>
                     <td>{{ recipe.shortDescription }}</td>
                     <td>{{ recipe.servings }}</td>
+                    <td>{{ recipe.dietaryType.name }}</td>
+                    <td>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Unknown' }}</td>
                     <td>
                         {% if recipe.source %}
                             <a href="{{ recipe.source }}" target="_blank" rel="noopener noreferrer">
@@ -61,11 +133,12 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="11">no records found</td>
+                    <td colspan="12">No recipes match the selected filters.</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% if is_granted('ROLE_USER') %}
         <a href="{{ path('app_recipe_new') }}">Create new</a>

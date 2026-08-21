@@ -80,7 +80,10 @@
                 <th>Source</th>
                 <td>{{ recipe.source }}</td>
             </tr>
-
+            <tr>
+                <th>Calories per serving</th>
+                <td>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Unknown' }}</td>
+            </tr>
             <tr>
                 <th>CreatedAt</th>
                 <td>{{ recipe.createdAt ? recipe.createdAt|date('Y-m-d H:i:s') : '' }}</td>

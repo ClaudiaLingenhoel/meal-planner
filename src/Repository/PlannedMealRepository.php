@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\PlannedMeal;
 use App\Entity\User;
-use DateTime;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,7 +33,7 @@ class PlannedMealRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findForUserAndWeek(User $user, DateTime $start, DateTime $end): array
+    public function findForUserAndWeek(User $user, DateTimeInterface $start, DateTimeInterface $end): array
     {
         return $this->createQueryBuilder('pm')
             ->andWhere('pm.user = :user')

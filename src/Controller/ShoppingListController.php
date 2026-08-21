@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\PlannedMealRepository;
-use DateTime;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,14 +16,8 @@ final class ShoppingListController extends AbstractController
     #[Route('/shopping-list', name: 'app_shopping_list')]
     public function index(Request $request, PlannedMealRepository $plannedMealRepository): Response
     {
-        $week = $request->query->get('week');
-        if ($week) {
-            $startOfWeek = new DateTime($week);
-        } else {
-            $startOfWeek = new DateTime('monday this week');
-        }
-
-        $endOfWeek = (clone $startOfWeek)->modify('+6 days');
+        $startOfWeek = $this->getStartOfWeek($request);
+        $endOfWeek = $startOfWeek->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
             $this->getUser(),
@@ -76,5 +70,21 @@ final class ShoppingListController extends AbstractController
             'startOfWeek' => $startOfWeek,
             'endOfWeek' => $endOfWeek,
         ]);
+    }
+
+    private function getStartOfWeek(Request $request): DateTimeImmutable
+    {
+        $week = $request->query->getString('week');
+        if ('' === $week) {
+            return new DateTimeImmutable('monday this week');
+        }
+
+        $selectedDate = DateTimeImmutable::createFromFormat('!Y-m-d', $week);
+        $errors = DateTimeImmutable::getLastErrors();
+        if (false === $selectedDate || (false !== $errors && (0 < $errors['warning_count'] || 0 < $errors['error_count']))) {
+            return new DateTimeImmutable('monday this week');
+        }
+
+        return $selectedDate->modify('monday this week');
     }
 }

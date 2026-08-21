@@ -7,25 +7,22 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20260820135223 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add servings to planned meals and initialise existing rows from their recipes.';
     }
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE planned_meal ADD servings INT NOT NULL');
+        $this->addSql('ALTER TABLE planned_meal ADD servings INT DEFAULT NULL');
+        $this->addSql('UPDATE planned_meal pm INNER JOIN recipe r ON pm.recipe_id = r.id SET pm.servings = r.servings');
+        $this->addSql('ALTER TABLE planned_meal MODIFY servings INT NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE planned_meal DROP servings');
     }
 }

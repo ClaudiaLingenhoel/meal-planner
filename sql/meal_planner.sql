@@ -88,6 +88,11 @@ VALUES
     'DoctrineMigrations\\Version20260820135223',
     '2026-08-20 13:52:30',
     30
+  ),
+  (
+    'DoctrineMigrations\\Version20260821120000',
+    '2026-08-21 12:00:00',
+    0
   );
 
 -- --------------------------------------------------------
@@ -208,6 +213,7 @@ CREATE TABLE `recipe` (
   `instructions` longtext NOT NULL,
   `source` varchar(255) DEFAULT NULL,
   `servings` int NOT NULL,
+  `calories_per_serving` int DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -227,6 +233,7 @@ INSERT INTO
     `instructions`,
     `source`,
     `servings`,
+    `calories_per_serving`,
     `image`,
     `created_at`,
     `updated_at`,
@@ -242,6 +249,7 @@ VALUES
     'Preheat the oven to 175°C. Grease and line a baking pan with parchment paper. Finely grate the zucchini without peeling or squeezing it and mash the banana. In a large bowl, combine flour, cocoa powder, baking powder, salt and sugar. Add the neutral oil, plant-based milk, vanilla extract, mashed banana and grated zucchini. Mix only until combined. Spread the batter evenly in the prepared pan and sprinkle with vegan chocolate chips if using. Bake for about 35 minutes. Let the brownies cool in the pan for about 15 minutes, then remove them and allow them to cool completely before cutting.',
     'https://biancazapatka.com/en/vegan-zucchini-brownies/',
     15,
+    NULL,
     'brownies-sm-6a86b1fa3fda1.jpg',
     '2026-08-18 21:15:53',
     '2026-08-20 07:51:22',
@@ -256,6 +264,7 @@ VALUES
     'Preheat the oven to 220°C and line a baking tray with parchment paper. Combine the cooked rice with red Thai curry paste, oil and a little salt, then spread it evenly over the tray. Bake for about 30 minutes until golden and crispy, turning the rice halfway through. For the dressing, remove the seeds from the chili and finely chop it. Press or finely chop the garlic and combine both with tamari, sugar, water and freshly squeezed lime juice. Dice the cucumber and roughly chop the parsley, cilantro, mint and peanuts. Let the crispy rice cool slightly, then combine it with the cucumber, herbs, peanuts, crispy fried onions and dressing. Serve immediately, with additional lime wedges if desired.',
     'https://biancazapatka.com/en/crispy-rice-salad/',
     4,
+    NULL,
     'rice-sm-6a86b20b6851a.jpg',
     '2026-08-18 21:15:53',
     '2026-08-20 11:18:51',
@@ -270,6 +279,7 @@ VALUES
     'Combine the wheat flour and rye flour with a little salt, the eggs and enough water to form a smooth pasta dough. Cover the dough and let it rest for about 2 hours. Meanwhile, cook the potatoes until soft, allow them to cool slightly and press or mash them. Finely chop the onion and garlic and sauté them in a generous amount of butter until translucent. Add them to the potatoes. Finely chop the parsley and mix it into the filling. Roll the rested dough out thinly on a floured surface and cut out round pieces. Place some filling in the center of each round, fold the dough over and press the edges firmly together with a fork. Cook the filled dumplings in boiling salted water for about 2–3 minutes, then drain. Serve with melted butter.',
     'https://www.chefkoch.de/rezepte/3133271466707231/Osttiroler-Schlipfkrapfen.html',
     4,
+    NULL,
     'schlipf-sm-6a86b21807e50.jpg',
     '2026-08-18 21:15:53',
     '2026-08-20 07:51:52',
@@ -284,6 +294,7 @@ VALUES
     'Preheat the oven to 200°C. For the crumble topping, combine flour, rolled oats, salt, brown sugar and cinnamon in a bowl. Cut the vegan butter into small cubes, add it to the dry ingredients and work everything together until coarse crumbs form. Wash and core the apples, cut them into cubes and toss them with freshly squeezed lemon juice. Transfer the apples to a baking dish. Spread the crumble mixture evenly over the apples and add slivered almonds and a little extra brown sugar if desired. Bake for about 30 minutes until the topping is golden brown. Allow the crumble to cool briefly before serving.',
     'https://biancazapatka.com/en/vegan-apple-crumble/',
     6,
+    NULL,
     'crumble-sm-6a86b239c70e0.jpg',
     '2026-08-18 21:15:53',
     '2026-08-20 07:52:25',
@@ -298,6 +309,7 @@ VALUES
     'Bring the water to a boil in a large pot, reduce the heat and add the beef in one piece. Cover and simmer for about 1 hour, removing any foam that collects on the surface. Meanwhile, finely dice the onion and chop the garlic. Peel the beetroot, potatoes and carrots and cut them into roughly 1–2 cm pieces. Wash the cabbage, remove any tough core and slice it into thin strips. Cut the tomatoes into pieces. Remove the cooked beef from the broth and cut it into bite-sized pieces. Heat the canola oil in a second large pot and sauté the onion, garlic and tomatoes. Add the beetroot, potatoes, carrots and cabbage and briefly sauté them as well. Sprinkle the flour over the vegetables, stir well and pour in the beef broth. Add the beef, bay leaf, salt and pepper and simmer for about 45 minutes, until the vegetables are tender. Finely chop the parsley. Remove the bay leaf, season the soup with additional salt, pepper and lemon juice to taste, and serve topped with sour cream and parsley, with whole grain bread on the side.',
     'https://www.einfachkochen.de/rezepte/borschtsch-soo-wuerzig-lecker',
     1,
+    NULL,
     'borscht-sm-6a86b24b566ec.jpg',
     '2026-08-18 21:15:53',
     '2026-08-20 07:52:43',
@@ -313,6 +325,7 @@ VALUES
     NULL,
     2,
     NULL,
+    NULL,
     '2026-08-19 15:20:00',
     NULL,
     2,
@@ -326,6 +339,7 @@ VALUES
     '333fdsdddddddddddddddd',
     NULL,
     1,
+    NULL,
     NULL,
     '2026-08-19 16:12:47',
     '2026-08-19 16:13:29',
