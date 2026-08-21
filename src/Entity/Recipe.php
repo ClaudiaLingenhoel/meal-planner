@@ -44,6 +44,10 @@ class Recipe
     #[Assert\Positive]
     private ?int $servings = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
+    private ?int $caloriesPerServing = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
@@ -153,6 +157,18 @@ class Recipe
     public function setServings(int $servings): static
     {
         $this->servings = $servings;
+
+        return $this;
+    }
+
+    public function getCaloriesPerServing(): ?int
+    {
+        return $this->caloriesPerServing;
+    }
+
+    public function setCaloriesPerServing(?int $caloriesPerServing): static
+    {
+        $this->caloriesPerServing = $caloriesPerServing;
 
         return $this;
     }

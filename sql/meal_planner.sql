@@ -83,6 +83,11 @@ VALUES
     'DoctrineMigrations\\Version20260818190333',
     '2026-08-18 19:03:37',
     19
+  ),
+  (
+    'DoctrineMigrations\\Version20260821120000',
+    '2026-08-21 12:00:00',
+    0
   );
 
 -- --------------------------------------------------------
@@ -203,6 +208,7 @@ CREATE TABLE `recipe` (
   `instructions` longtext NOT NULL,
   `source` varchar(255) DEFAULT NULL,
   `servings` int NOT NULL,
+  `calories_per_serving` int DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -222,6 +228,7 @@ INSERT INTO
     `instructions`,
     `source`,
     `servings`,
+    `calories_per_serving`,
     `image`,
     `created_at`,
     `updated_at`,
@@ -238,6 +245,7 @@ VALUES
     'https://biancazapatka.com/en/vegan-zucchini-brownies/',
     15,
     NULL,
+    NULL,
     '2026-08-18 21:15:53',
     NULL,
     1,
@@ -251,6 +259,7 @@ VALUES
     'Preheat the oven to 220°C and line a baking tray with parchment paper. Combine the cooked rice with red Thai curry paste, oil and a little salt, then spread it evenly over the tray. Bake for about 30 minutes until golden and crispy, turning the rice halfway through. For the dressing, remove the seeds from the chili and finely chop it. Press or finely chop the garlic and combine both with tamari, sugar, water and freshly squeezed lime juice. Dice the cucumber and roughly chop the parsley, cilantro, mint and peanuts. Let the crispy rice cool slightly, then combine it with the cucumber, herbs, peanuts, crispy fried onions and dressing. Serve immediately, with additional lime wedges if desired.',
     'https://biancazapatka.com/en/crispy-rice-salad/',
     4,
+    NULL,
     NULL,
     '2026-08-18 21:15:53',
     '2026-08-19 14:39:50',
@@ -266,6 +275,7 @@ VALUES
     'https://www.chefkoch.de/rezepte/3133271466707231/Osttiroler-Schlipfkrapfen.html',
     4,
     NULL,
+    NULL,
     '2026-08-18 21:15:53',
     NULL,
     2,
@@ -279,6 +289,7 @@ VALUES
     'Preheat the oven to 200°C. For the crumble topping, combine flour, rolled oats, salt, brown sugar and cinnamon in a bowl. Cut the vegan butter into small cubes, add it to the dry ingredients and work everything together until coarse crumbs form. Wash and core the apples, cut them into cubes and toss them with freshly squeezed lemon juice. Transfer the apples to a baking dish. Spread the crumble mixture evenly over the apples and add slivered almonds and a little extra brown sugar if desired. Bake for about 30 minutes until the topping is golden brown. Allow the crumble to cool briefly before serving.',
     'https://biancazapatka.com/en/vegan-apple-crumble/',
     6,
+    NULL,
     NULL,
     '2026-08-18 21:15:53',
     NULL,
@@ -294,6 +305,7 @@ VALUES
     'https://www.einfachkochen.de/rezepte/borschtsch-soo-wuerzig-lecker',
     1,
     NULL,
+    NULL,
     '2026-08-18 21:15:53',
     '2026-08-19 16:33:22',
     3,
@@ -308,6 +320,7 @@ VALUES
     NULL,
     2,
     NULL,
+    NULL,
     '2026-08-19 15:20:00',
     NULL,
     2,
@@ -321,6 +334,7 @@ VALUES
     '333fdsdddddddddddddddd',
     NULL,
     1,
+    NULL,
     NULL,
     '2026-08-19 16:12:47',
     '2026-08-19 16:13:29',

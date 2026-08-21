@@ -70,6 +70,10 @@
                 <td>{{ recipe.servings }}</td>
             </tr>
             <tr>
+                <th>Calories per serving</th>
+                <td>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Unknown' }}</td>
+            </tr>
+            <tr>
                 <th>Image</th>
                 <td>{{ recipe.image }}</td>
             </tr>

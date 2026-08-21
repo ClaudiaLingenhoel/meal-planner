@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Form\RecipeType;
+use App\Repository\DietaryTypeRepository;
 use App\Repository\RecipeRepository;
 use App\Service\FileUploader;
 use DateTime;
@@ -18,23 +20,41 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class RecipeController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(RecipeRepository $recipeRepository): Response
+    public function index(
+        Request $request,
+        RecipeRepository $recipeRepository,
+        DietaryTypeRepository $dietaryTypeRepository,
+    ): Response
     {
+        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository);
+
         return $this->render('recipe/index.html.twig', [
-            'recipes' => $recipeRepository->findAll(),
+            'recipes' => $recipeRepository->findForBrowser($filters),
+            'dietaryTypes' => $dietaryTypeRepository->findBy([], ['restrictionLevel' => 'ASC']),
+            'filters' => $filters,
             'pageTitle' => 'All Recipes',
+            'mineOnly' => false,
         ]);
     }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/mine', name: 'mine', methods: ['GET'])]
-    public function mine(RecipeRepository $recipeRepository): Response
+    public function mine(
+        Request $request,
+        RecipeRepository $recipeRepository,
+        DietaryTypeRepository $dietaryTypeRepository,
+    ): Response
     {
+        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository);
+        /** @var User $user */
+        $user = $this->getUser();
+
         return $this->render('recipe/index.html.twig', [
-            'recipes' => $recipeRepository->findBy([
-                'creator' => $this->getUser(),
-            ]),
+            'recipes' => $recipeRepository->findForBrowser($filters, $user),
+            'dietaryTypes' => $dietaryTypeRepository->findBy([], ['restrictionLevel' => 'ASC']),
+            'filters' => $filters,
             'pageTitle' => 'My Recipes',
+            'mineOnly' => true,
         ]);
     }
 
@@ -152,5 +172,56 @@ final class RecipeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_recipe_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @return array{
+     *     search: string,
+     *     dietaryType: ?int,
+     *     dietaryLevel: ?int,
+     *     maxTime: ?int,
+     *     maxCalories: ?int,
+     *     sort: string
+     * }
+     */
+    private function filtersFromRequest(Request $request, DietaryTypeRepository $dietaryTypeRepository): array
+    {
+        $dietaryTypeId = $this->positiveIntegerQueryValue($request, 'dietaryType');
+        $dietaryType = null === $dietaryTypeId ? null : $dietaryTypeRepository->find($dietaryTypeId);
+
+        $allowedSorts = [
+            'newest',
+            'oldest',
+            'title_asc',
+            'title_desc',
+            'time_asc',
+            'time_desc',
+            'calories_asc',
+            'calories_desc',
+        ];
+        $sort = $request->query->getString('sort', 'newest');
+
+        return [
+            'search' => trim($request->query->getString('search')),
+            'dietaryType' => $dietaryType?->getId(),
+            'dietaryLevel' => $dietaryType?->getRestrictionLevel(),
+            'maxTime' => $this->positiveIntegerQueryValue($request, 'maxTime'),
+            'maxCalories' => $this->positiveIntegerQueryValue($request, 'maxCalories'),
+            'sort' => in_array($sort, $allowedSorts, true) ? $sort : 'newest',
+        ];
+    }
+
+    private function positiveIntegerQueryValue(Request $request, string $name): ?int
+    {
+        $value = $request->query->get($name);
+        if (null === $value || '' === $value) {
+            return null;
+        }
+
+        $integer = filter_var($value, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+
+        return false === $integer ? null : $integer;
     }
 }
