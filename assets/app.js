@@ -1,5 +1,4 @@
-import './stimulus_bootstrap.js';
-// import "./stimulus_bootstrap.js";
+import "./stimulus_bootstrap.js";
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -9,5 +8,7 @@ import './stimulus_bootstrap.js';
 import "./styles/app.css";
 
 import "./js/recipe-ingredients.js";
+
+import "./js/shopping-list.js";
 
 console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");

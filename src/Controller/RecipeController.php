@@ -26,6 +26,7 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/mine', name: 'mine', methods: ['GET'])]
     public function mine(RecipeRepository $recipeRepository): Response
     {

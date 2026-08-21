@@ -13,7 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\User;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 #[Route('/planner', name: 'app_meal_planner_')]
 final class MealPlannerController extends AbstractController
 {
@@ -43,11 +45,10 @@ final class MealPlannerController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin/{id}', name: 'admin_view', methods: ['GET'])]
     public function adminView(Request $request, User $user, PlannedMealRepository $plannedMealRepository): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
         $week = $request->query->get('week');
         if ($week) {
             $startOfWeek = new DateTime($week);

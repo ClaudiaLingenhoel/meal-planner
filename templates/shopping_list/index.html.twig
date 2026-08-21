@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Shopping List
+{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+
+        <h1>Shopping List</h1>
+
+        <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
+
+        <a href="{{ path('app_shopping_list', {
+            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
+            }) }}" data-turbo="false">
+            Previous Week
+        </a>
+
+        <a href="{{ path('app_shopping_list') }}" data-turbo="false">
+            Current Week
+        </a>
+
+        <a href="{{ path('app_shopping_list', {
+            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
+            }) }}" data-turbo="false">
+            Next Week
+        </a>
+
+        {% if shoppingList is empty %}
+            <p>No ingredients needed for this week.</p>
+        {% else %}
+            <ul id="shopping-list" data-week="{{ startOfWeek|date('Y-m-d') }}" data-user="{{ app.user.id }}" class="list-unstyled">
+
+                {% for item in shoppingList|sort((a, b) => a.name <=> b.name) %}
+                    <li class="shopping-item">
+                        <label>
+                            <input type="checkbox" class="shopping-checkbox" data-key="{{ item.key }}">
+                            <span class="shopping-text">
+                                {{ item.name }}
+
+                                {% if item.specification %}
+                                    ({{ item.specification }})
+                                {% endif %}
+                                –
+                                {% if item.quantity is not null %}
+                                    {% if item.unit == 'g' and item.quantity >= 1000 %}
+                                        {{ (item.quantity / 1000)|round(2) }} kg
+
+                                    {% elseif item.unit == 'ml' and item.quantity >= 1000 %}
+                                        {{ (item.quantity / 1000)|round(2) }} l
+
+                                    {% else %}
+                                        {{ item.quantity|round(2) }} {{ item.unit }}
+                                    {% endif %}
+
+                                {% else %}
+                                    {{ item.unit }}
+                                {% endif %}
+                            </span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}
