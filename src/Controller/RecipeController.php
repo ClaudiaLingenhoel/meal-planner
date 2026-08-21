@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\DietaryType;
 use App\Entity\Recipe;
 use App\Entity\User;
 use App\Form\RecipeType;
@@ -26,7 +27,9 @@ final class RecipeController extends AbstractController
         DietaryTypeRepository $dietaryTypeRepository,
     ): Response
     {
-        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository);
+        $user = $this->getUser();
+        $defaultDietaryType = $user instanceof User ? $user->getDietaryType() : null;
+        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository, $defaultDietaryType);
 
         return $this->render('recipe/index.html.twig', [
             'recipes' => $recipeRepository->findForBrowser($filters),
@@ -45,9 +48,9 @@ final class RecipeController extends AbstractController
         DietaryTypeRepository $dietaryTypeRepository,
     ): Response
     {
-        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository);
         /** @var User $user */
         $user = $this->getUser();
+        $filters = $this->filtersFromRequest($request, $dietaryTypeRepository, $user->getDietaryType());
 
         return $this->render('recipe/index.html.twig', [
             'recipes' => $recipeRepository->findForBrowser($filters, $user),
@@ -184,10 +187,17 @@ final class RecipeController extends AbstractController
      *     sort: string
      * }
      */
-    private function filtersFromRequest(Request $request, DietaryTypeRepository $dietaryTypeRepository): array
+    private function filtersFromRequest(
+        Request $request,
+        DietaryTypeRepository $dietaryTypeRepository,
+        ?DietaryType $defaultDietaryType = null,
+    ): array
     {
-        $dietaryTypeId = $this->positiveIntegerQueryValue($request, 'dietaryType');
-        $dietaryType = null === $dietaryTypeId ? null : $dietaryTypeRepository->find($dietaryTypeId);
+        $dietaryType = $defaultDietaryType;
+        if ($request->query->has('dietaryType')) {
+            $dietaryTypeId = $this->positiveIntegerQueryValue($request, 'dietaryType');
+            $dietaryType = null === $dietaryTypeId ? null : $dietaryTypeRepository->find($dietaryTypeId);
+        }
 
         $allowedSorts = [
             'newest',

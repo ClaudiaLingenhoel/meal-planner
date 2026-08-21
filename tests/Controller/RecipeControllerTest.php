@@ -41,6 +41,11 @@ final class RecipeControllerTest extends TestCase
 
     public function testInvalidAndEmptyFiltersFallBackSafely(): void
     {
+        $defaultDietaryType = (new DietaryType())
+            ->setName('Vegetarian')
+            ->setRestrictionLevel(2);
+        (new \ReflectionProperty(DietaryType::class, 'id'))->setValue($defaultDietaryType, 2);
+
         $repository = $this->createMock(DietaryTypeRepository::class);
         $repository->expects(self::never())->method('find');
 
@@ -49,7 +54,7 @@ final class RecipeControllerTest extends TestCase
             'maxTime' => 'invalid',
             'maxCalories' => '-10',
             'sort' => 'not-a-sort',
-        ]), $repository);
+        ]), $repository, $defaultDietaryType);
 
         self::assertNull($filters['dietaryType']);
         self::assertNull($filters['dietaryLevel']);
@@ -58,11 +63,31 @@ final class RecipeControllerTest extends TestCase
         self::assertSame('newest', $filters['sort']);
     }
 
+    public function testUserDietaryTypeIsUsedWhenTheFilterIsOmitted(): void
+    {
+        $defaultDietaryType = (new DietaryType())
+            ->setName('Vegetarian')
+            ->setRestrictionLevel(2);
+        (new \ReflectionProperty(DietaryType::class, 'id'))->setValue($defaultDietaryType, 2);
+
+        $repository = $this->createMock(DietaryTypeRepository::class);
+        $repository->expects(self::never())->method('find');
+
+        $filters = $this->filtersFromRequest(new Request(), $repository, $defaultDietaryType);
+
+        self::assertSame(2, $filters['dietaryType']);
+        self::assertSame(2, $filters['dietaryLevel']);
+    }
+
     /** @return array<string, string|int|null> */
-    private function filtersFromRequest(Request $request, DietaryTypeRepository $repository): array
+    private function filtersFromRequest(
+        Request $request,
+        DietaryTypeRepository $repository,
+        ?DietaryType $defaultDietaryType = null,
+    ): array
     {
         $method = new \ReflectionMethod(RecipeController::class, 'filtersFromRequest');
 
-        return $method->invoke(new RecipeController(), $request, $repository);
+        return $method->invoke(new RecipeController(), $request, $repository, $defaultDietaryType);
     }
 }
