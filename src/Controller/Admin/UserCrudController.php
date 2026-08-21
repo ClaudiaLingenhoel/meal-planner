@@ -14,6 +14,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -34,20 +36,25 @@ class UserCrudController extends AbstractCrudController
             TextField::new('plainPassword', 'Password')
                 ->setFormType(PasswordType::class)
                 ->onlyWhenCreating()
-                ->setRequired(true),
+                ->setRequired(true)
+                ->setFormTypeOption('constraints', [
+                    new NotBlank(message: 'Please enter a password.'),
+                    new Length(min: 6, minMessage: 'The password must be at least {{ limit }} characters.'),
+                ]),
 
             AssociationField::new('dietaryType'),
 
             BooleanField::new('isBlocked')
                 ->hideWhenCreating(),
 
-            ChoiceField::new('roles', 'Admin')
+            ChoiceField::new('adminRoles', 'Admin')
                 ->setChoices([
                     'Admin' => 'ROLE_ADMIN',
                 ])
                 ->allowMultipleChoices()
                 ->setRequired(false)
-                ->setFormTypeOption('expanded', true),
+                ->setFormTypeOption('expanded', true)
+                ->setSortable(false),
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Service\FileUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Service\FileUploader;
 
 #[Route('/recipe', name: 'app_recipe_')]
 final class RecipeController extends AbstractController
@@ -26,6 +26,7 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/mine', name: 'mine', methods: ['GET'])]
     public function mine(RecipeRepository $recipeRepository): Response
     {
@@ -99,21 +100,24 @@ final class RecipeController extends AbstractController
             $recipe->setUpdatedAt($today);
 
             $imageFile = $form->get('image')->getData();
+            $oldImagePath = null;
 
             if ($imageFile) {
+                $newFilename = $fileUploader->upload($imageFile);
                 $oldImage = $recipe->getImage();
 
                 if ($oldImage) {
-                    $oldPath = $fileUploader->getTargetDirectory() . '/' . $oldImage;
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
+                    $oldImagePath = $fileUploader->getTargetDirectory() . '/' . $oldImage;
                 }
-                $newFilename = $fileUploader->upload($imageFile);
+
                 $recipe->setImage($newFilename);
             }
 
             $entityManager->flush();
+
+            if ($oldImagePath && is_file($oldImagePath)) {
+                unlink($oldImagePath);
+            }
 
             return $this->redirectToRoute('app_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -137,15 +141,14 @@ final class RecipeController extends AbstractController
 
         if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
             $image = $recipe->getImage();
+            $imagePath = $image ? $fileUploader->getTargetDirectory() . '/' . $image : null;
 
-            if ($image) {
-                $imagePath = $fileUploader->getTargetDirectory() . '/' . $image;
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
             $entityManager->remove($recipe);
             $entityManager->flush();
+
+            if ($imagePath && is_file($imagePath)) {
+                unlink($imagePath);
+            }
         }
 
         return $this->redirectToRoute('app_recipe_index', [], Response::HTTP_SEE_OTHER);

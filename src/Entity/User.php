@@ -8,13 +8,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -124,6 +125,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isAdmin(): bool
+    {
+        return in_array('ROLE_ADMIN', $this->roles, true);
+    }
+
+    public function setAdmin(bool $admin): static
+    {
+        if ($admin && !$this->isAdmin()) {
+            $this->roles[] = 'ROLE_ADMIN';
+        } elseif (!$admin) {
+            $this->roles = array_values(array_filter(
+                $this->roles,
+                static fn (string $role): bool => 'ROLE_ADMIN' !== $role,
+            ));
+        }
+
+        return $this;
+    }
+
+    /** @return list<string> */
+    public function getAdminRoles(): array
+    {
+        return $this->isAdmin() ? ['ROLE_ADMIN'] : [];
+    }
+
+    /** @param list<string> $roles */
+    public function setAdminRoles(array $roles): static
+    {
+        return $this->setAdmin(in_array('ROLE_ADMIN', $roles, true));
+    }
+
     /**
      * @see PasswordAuthenticatedUserInterface
      */
@@ -160,6 +192,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
 
         return $data;
+    }
+
+    public function isEqualTo(UserInterface $user): bool
+    {
+        if (!$user instanceof self || $this->isBlocked() || $user->isBlocked()) {
+            return false;
+        }
+
+        if ($this->getUserIdentifier() !== $user->getUserIdentifier()) {
+            return false;
+        }
+
+        $currentPassword = $this->getPassword();
+        $refreshedPassword = $user->getPassword();
+        if (
+            $currentPassword !== $refreshedPassword
+            && (8 !== strlen((string) $currentPassword) || hash('crc32c', (string) $refreshedPassword) !== $currentPassword)
+        ) {
+            return false;
+        }
+
+        $currentRoles = $this->getRoles();
+        $refreshedRoles = $user->getRoles();
+        sort($currentRoles);
+        sort($refreshedRoles);
+
+        return $currentRoles === $refreshedRoles;
     }
 
     public function getFirstName(): ?string

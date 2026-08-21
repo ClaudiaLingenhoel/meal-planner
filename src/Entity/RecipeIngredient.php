@@ -75,7 +75,7 @@ class RecipeIngredient
         return $this->quantity;
     }
 
-    public function setQuantity(string $quantity): static
+    public function setQuantity(?string $quantity): static
     {
         $this->quantity = $quantity;
 
