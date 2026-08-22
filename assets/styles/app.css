@@ -1,35 +1,190 @@
 body {
-    background-color: rgb(255, 255, 255);
+    background-color: #f7f8f5;
+    color: #253126;
 }
+
+.navbar-brand i {
+    font-size: 1.35rem;
+}
+
+.page-heading {
+    max-width: 48rem;
+}
+
+.content-card {
+    border: 0;
+    box-shadow: 0 0.25rem 1rem rgba(37, 49, 38, 0.08);
+}
+
+.recipe-card {
+    overflow: hidden;
+}
+
+.recipe-card .card-footer .btn:hover,
+.recipe-card .card-footer .btn:focus-visible {
+    box-shadow: 0 0.2rem 0.55rem rgba(37, 49, 38, 0.22);
+}
+
+.recipe-card-image,
+.recipe-hero-image {
+    width: 100%;
+    object-fit: cover;
+    background-color: #e9ece7;
+}
+
+.recipe-card-image {
+    aspect-ratio: 16 / 10;
+}
+
+.recipe-hero-image {
+    min-height: 18rem;
+    max-height: 32rem;
+}
+
+.recipe-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.form-shell {
+    max-width: 58rem;
+}
+
+.auth-shell {
+    max-width: 30rem;
+}
+
+.profile-avatar {
+    width: 4rem;
+    height: 4rem;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.ingredient-list .list-group-item {
+    padding-block: 0.85rem;
+}
+
+.week-navigation .btn {
+    min-width: 8.5rem;
+}
+
 .weekly-planner {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(12rem, 1fr));
     gap: 1rem;
     margin-top: 2rem;
+    padding-bottom: 0.5rem;
+    overflow-x: auto;
+    align-items: start;
 }
 
 .day-column {
     min-width: 0;
+    padding: 0.75rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(37, 49, 38, 0.06);
 }
 
-.day-column h2 {
-    font-size: 1.2rem;
+.day-header {
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid #dfe7dc;
 }
 
 .meal-slot {
-    min-height: 120px;
-    margin-bottom: 1rem;
+    height: 11rem;
+    margin-bottom: 0.75rem;
     padding: 0.75rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid #e6e9e4;
     border-radius: 0.5rem;
+    background-color: #fafbf9;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .meal-slot h3 {
-    font-size: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-@media (max-width: 768px) {
+.planned-meal-image {
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 3rem;
+    object-fit: cover;
+    border-radius: 0.375rem;
+}
+
+.planned-meal-card {
+    min-height: 7.25rem;
+}
+
+.planned-meal-title {
+    display: -webkit-box !important;
+    overflow: hidden;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.shopping-item label {
+    cursor: pointer;
+}
+
+.shopping-checkbox:checked + .shopping-text {
+    color: #6c757d;
+    text-decoration: line-through;
+}
+
+@media (max-width: 1199.98px) {
+    .weekly-planner {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        overflow-x: visible;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .weekly-planner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recipe-hero-image {
+        min-height: 14rem;
+    }
+}
+
+@media (max-width: 575.98px) {
     .weekly-planner {
         grid-template-columns: 1fr;
+    }
+
+    .week-navigation {
+        display: grid !important;
+        grid-template-columns: 1fr;
+    }
+
+    .week-navigation .btn {
+        width: 100%;
+    }
+
+    .page-actions {
+        display: grid !important;
+        grid-template-columns: 1fr;
+    }
+
+    .page-actions .btn,
+    .page-actions form,
+    .page-actions form .btn {
+        width: 100%;
     }
 }

@@ -1,67 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Shopping List
-{% endblock %}
+{% block title %}Shopping List | MealPlanner{% endblock %}
 
 {% block body %}
-    <div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-8">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+                <div class="page-heading">
+                    <span class="text-success fw-semibold text-uppercase small">Weekly essentials</span>
+                    <h1 class="display-6 fw-bold mb-2">Shopping List</h1>
+                    <p class="text-secondary mb-0"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ startOfWeek|date('d M Y') }} – {{ endOfWeek|date('d M Y') }}</p>
+                </div>
+                <a href="{{ path('app_meal_planner_index', {week: startOfWeek|date('Y-m-d')}) }}" class="btn btn-outline-success flex-shrink-0">View meal plan</a>
+            </div>
 
-        <h1>Shopping List</h1>
+            <nav class="week-navigation d-flex flex-wrap gap-2 mb-4" aria-label="Choose shopping-list week">
+                <a class="btn btn-outline-secondary" href="{{ path('app_shopping_list', {week: startOfWeek|date_modify('-7 days')|date('Y-m-d')}) }}" data-turbo="false"><i class="bi bi-chevron-left me-1" aria-hidden="true"></i>Previous week</a>
+                <a class="btn btn-outline-success" href="{{ path('app_shopping_list') }}" data-turbo="false">Current week</a>
+                <a class="btn btn-outline-secondary" href="{{ path('app_shopping_list', {week: startOfWeek|date_modify('+7 days')|date('Y-m-d')}) }}" data-turbo="false">Next week<i class="bi bi-chevron-right ms-1" aria-hidden="true"></i></a>
+            </nav>
 
-        <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
-
-        <a href="{{ path('app_shopping_list', {
-            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
-            }) }}" data-turbo="false">
-            Previous Week
-        </a>
-
-        <a href="{{ path('app_shopping_list') }}" data-turbo="false">
-            Current Week
-        </a>
-
-        <a href="{{ path('app_shopping_list', {
-            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
-            }) }}" data-turbo="false">
-            Next Week
-        </a>
-
-        {% if shoppingList is empty %}
-            <p>No ingredients needed for this week.</p>
-        {% else %}
-            <ul id="shopping-list" data-week="{{ startOfWeek|date('Y-m-d') }}" data-user="{{ app.user.id }}" class="list-unstyled">
-
-                {% for item in shoppingList|sort((a, b) => a.name <=> b.name) %}
-                    <li class="shopping-item">
-                        <label>
-                            <input type="checkbox" class="shopping-checkbox" data-key="{{ item.key }}">
-                            <span class="shopping-text">
-                                {{ item.name }}
-
-                                {% if item.specification %}
-                                    ({{ item.specification }})
-                                {% endif %}
-                                –
-                                {% if item.quantity is not null %}
-                                    {% if item.unit == 'g' and item.quantity >= 1000 %}
-                                        {{ (item.quantity / 1000)|round(2) }} kg
-
-                                    {% elseif item.unit == 'ml' and item.quantity >= 1000 %}
-                                        {{ (item.quantity / 1000)|round(2) }} l
-
-                                    {% else %}
-                                        {{ item.quantity|round(2) }} {{ item.unit }}
-                                    {% endif %}
-
-                                {% else %}
-                                    {{ item.unit }}
-                                {% endif %}
-                            </span>
-                        </label>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+            {% if shoppingList is empty %}
+                <div class="card content-card text-center">
+                    <div class="card-body py-5">
+                        <i class="bi bi-basket3 display-5 text-secondary" aria-hidden="true"></i>
+                        <h2 class="h4 mt-3">Your list is empty</h2>
+                        <p class="text-secondary">No ingredients are needed for this week yet.</p>
+                        <a href="{{ path('app_recipe_index') }}" class="btn btn-success">Browse recipes</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card content-card">
+                    <div class="card-header bg-white p-3 p-md-4">
+                        <div class="d-flex justify-content-between align-items-center gap-3">
+                            <div><h2 class="h5 mb-1">Ingredients to buy</h2><p class="text-secondary small mb-0">Selections are saved for this user and week.</p></div>
+                            <span class="badge text-bg-success rounded-pill">{{ shoppingList|length }}</span>
+                        </div>
+                    </div>
+                    <ul id="shopping-list" data-week="{{ startOfWeek|date('Y-m-d') }}" data-user="{{ app.user.id }}" class="list-group list-group-flush">
+                        {% for item in shoppingList|sort((a, b) => a.name <=> b.name) %}
+                            <li class="shopping-item list-group-item p-3 p-md-4">
+                                <label class="form-check d-flex align-items-start gap-2 mb-0">
+                                    <input type="checkbox" class="shopping-checkbox form-check-input flex-shrink-0" data-key="{{ item.key }}">
+                                    <span class="shopping-text form-check-label flex-grow-1">
+                                        <strong>{{ item.name }}</strong>
+                                        {% if item.specification %}<span class="text-secondary">({{ item.specification }})</span>{% endif %}
+                                        <span class="text-secondary float-sm-end d-block d-sm-inline mt-1 mt-sm-0">
+                                            {% if item.quantity is not null %}
+                                                {% if item.unit == 'g' and item.quantity >= 1000 %}{{ (item.quantity / 1000)|round(2) }} kg
+                                                {% elseif item.unit == 'ml' and item.quantity >= 1000 %}{{ (item.quantity / 1000)|round(2) }} l
+                                                {% else %}{{ item.quantity|round(2) }} {{ item.unit }}{% endif %}
+                                            {% else %}{{ item.unit }}{% endif %}
+                                        </span>
+                                    </span>
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

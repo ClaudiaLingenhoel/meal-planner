@@ -1,147 +1,125 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Recipes
-{% endblock %}
+{% block title %}{{ pageTitle }} | MealPlanner{% endblock %}
 
 {% block body %}
-    <h1>{{ pageTitle }}</h1>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div class="page-heading">
+            <span class="text-success fw-semibold text-uppercase small">Recipe browser</span>
+            <h1 class="display-6 fw-bold mb-2">{{ pageTitle }}</h1>
+            <p class="text-secondary mb-0">
+                {% if mineOnly %}Manage the recipes you have added to MealPlanner.{% else %}Find recipes shared by the whole community.{% endif %}
+            </p>
+        </div>
+        {% if is_granted('ROLE_USER') %}
+            <a href="{{ path('app_recipe_new') }}" class="btn btn-success flex-shrink-0">
+                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add recipe
+            </a>
+        {% endif %}
+    </div>
 
-    <form method="get" class="card card-body mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-12 col-lg-4">
-                <label for="recipe-search" class="form-label">Search</label>
-                <input
-                    type="search"
-                    id="recipe-search"
-                    name="search"
-                    value="{{ filters.search }}"
-                    class="form-control"
-                    placeholder="Title, description, ingredient..."
-                >
+    <form method="get" class="card shadow-sm mb-4" role="search">
+        <div class="card-body p-3 p-lg-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-funnel text-success" aria-hidden="true"></i>
+                <h2 class="h5 mb-0">Search and filter</h2>
             </div>
-
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="dietary-type" class="form-label">Suitable for</label>
-                <select id="dietary-type" name="dietaryType" class="form-select">
-                    <option value="">All dietary types</option>
-                    {% for dietaryType in dietaryTypes %}
-                        <option value="{{ dietaryType.id }}"{% if filters.dietaryType == dietaryType.id %} selected{% endif %}>
-                            {{ dietaryType.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="max-time" class="form-label">Cooking time</label>
-                <select id="max-time" name="maxTime" class="form-select">
-                    <option value="">Any duration</option>
-                    {% for minutes in [15, 30, 45, 60, 90, 120] %}
-                        <option value="{{ minutes }}"{% if filters.maxTime == minutes %} selected{% endif %}>Up to {{ minutes }} min</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="max-calories" class="form-label">Calories</label>
-                <select id="max-calories" name="maxCalories" class="form-select">
-                    <option value="">Any calories</option>
-                    {% for calories in [200, 400, 600, 800, 1000] %}
-                        <option value="{{ calories }}"{% if filters.maxCalories == calories %} selected{% endif %}>Up to {{ calories }} kcal</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-2">
-                <label for="recipe-sort" class="form-label">Sort by</label>
-                <select id="recipe-sort" name="sort" class="form-select">
-                    <option value="newest"{% if filters.sort == 'newest' %} selected{% endif %}>Newest first</option>
-                    <option value="oldest"{% if filters.sort == 'oldest' %} selected{% endif %}>Oldest first</option>
-                    <option value="title_asc"{% if filters.sort == 'title_asc' %} selected{% endif %}>Title A–Z</option>
-                    <option value="title_desc"{% if filters.sort == 'title_desc' %} selected{% endif %}>Title Z–A</option>
-                    <option value="time_asc"{% if filters.sort == 'time_asc' %} selected{% endif %}>Quickest first</option>
-                    <option value="time_desc"{% if filters.sort == 'time_desc' %} selected{% endif %}>Longest first</option>
-                    <option value="calories_asc"{% if filters.sort == 'calories_asc' %} selected{% endif %}>Lowest calories</option>
-                    <option value="calories_desc"{% if filters.sort == 'calories_desc' %} selected{% endif %}>Highest calories</option>
-                </select>
-            </div>
-
-            <div class="col-12 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Apply filters</button>
-                <a href="{{ path(mineOnly ? 'app_recipe_mine' : 'app_recipe_index') }}" class="btn btn-outline-secondary">Clear</a>
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label for="recipe-search" class="form-label">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+                        <input type="search" id="recipe-search" name="search" value="{{ filters.search }}" class="form-control" placeholder="Title, description or ingredient">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="dietary-type" class="form-label">Suitable for</label>
+                    <select id="dietary-type" name="dietaryType" class="form-select">
+                        <option value="">All dietary types</option>
+                        {% for dietaryType in dietaryTypes %}
+                            <option value="{{ dietaryType.id }}"{% if filters.dietaryType == dietaryType.id %} selected{% endif %}>{{ dietaryType.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="max-time" class="form-label">Cooking time</label>
+                    <select id="max-time" name="maxTime" class="form-select">
+                        <option value="">Any duration</option>
+                        {% for minutes in [15, 30, 45, 60, 90, 120] %}
+                            <option value="{{ minutes }}"{% if filters.maxTime == minutes %} selected{% endif %}>Up to {{ minutes }} min</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="max-calories" class="form-label">Calories</label>
+                    <select id="max-calories" name="maxCalories" class="form-select">
+                        <option value="">Any calories</option>
+                        {% for calories in [200, 400, 600, 800, 1000] %}
+                            <option value="{{ calories }}"{% if filters.maxCalories == calories %} selected{% endif %}>Up to {{ calories }} kcal</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label for="recipe-sort" class="form-label">Sort by</label>
+                    <select id="recipe-sort" name="sort" class="form-select">
+                        <option value="newest"{% if filters.sort == 'newest' %} selected{% endif %}>Newest first</option>
+                        <option value="oldest"{% if filters.sort == 'oldest' %} selected{% endif %}>Oldest first</option>
+                        <option value="title_asc"{% if filters.sort == 'title_asc' %} selected{% endif %}>Title A–Z</option>
+                        <option value="title_desc"{% if filters.sort == 'title_desc' %} selected{% endif %}>Title Z–A</option>
+                        <option value="time_asc"{% if filters.sort == 'time_asc' %} selected{% endif %}>Quickest first</option>
+                        <option value="time_desc"{% if filters.sort == 'time_desc' %} selected{% endif %}>Longest first</option>
+                        <option value="calories_asc"{% if filters.sort == 'calories_asc' %} selected{% endif %}>Lowest calories</option>
+                        <option value="calories_desc"{% if filters.sort == 'calories_desc' %} selected{% endif %}>Highest calories</option>
+                    </select>
+                </div>
+                <div class="col-12 d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-success"><i class="bi bi-funnel-fill me-1" aria-hidden="true"></i>Apply filters</button>
+                    <a href="{{ path(mineOnly ? 'app_recipe_mine' : 'app_recipe_index') }}" class="btn btn-outline-secondary">Clear filters</a>
+                </div>
             </div>
         </div>
     </form>
 
-    <div class="table-responsive">
-    <table class="table align-middle">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Minutes</th>
-                <th>Description</th>
-                <th>Servings</th>
-                <th>Dietary type</th>
-                <th>Calories</th>
-                <th>Source</th>
-                <th>Created</th>
-                <th>Updated</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
+    {% if recipes is empty %}
+        <div class="card content-card text-center">
+            <div class="card-body py-5">
+                <i class="bi bi-search display-5 text-secondary" aria-hidden="true"></i>
+                <h2 class="h4 mt-3">No recipes found</h2>
+                <p class="text-secondary mb-3">No recipes match the selected filters.</p>
+                <a href="{{ path(mineOnly ? 'app_recipe_mine' : 'app_recipe_index') }}" class="btn btn-outline-success">Clear filters</a>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-secondary small mb-3">{{ recipes|length }} {{ recipes|length == 1 ? 'recipe' : 'recipes' }} found</p>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
             {% for recipe in recipes %}
-                <tr>
-                    <td>{{ recipe.id }}</td>
-                    <td>
-                        <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ recipe.title }}" style="width: 120px; height: auto;">
-                    </td>
-
-                    <td>{{ recipe.title }}</td>
-                    <td>{{ recipe.cookingTimeMinutes }}</td>
-                    <td>{{ recipe.shortDescription }}</td>
-                    <td>{{ recipe.servings }}</td>
-                    <td>{{ recipe.dietaryType.name }}</td>
-                    <td>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Unknown' }}</td>
-                    <td>
-                        {% if recipe.source %}
-                            <a href="{{ recipe.source }}" target="_blank" rel="noopener noreferrer">
-                                Source
-                            </a>
-                        {% endif %}
-                    </td>
-                    <td>{{ recipe.createdAt ? recipe.createdAt|date('d.m.Y H:i') : '' }}</td>
-                    <td>{{ recipe.updatedAt ? recipe.updatedAt|date('d.m.Y H:i') : '' }}</td>
-                    <td>
-                        <a href="{{ path('app_recipe_show', {'id': recipe.id}) }}">Details</a>
-
-                        {% if app.user %}
-                            <a href="{{ path('app_meal_planner_add', {id: recipe.id}) }}" class="btn btn-primary">
-                                Add to meal planner
-                            </a>
-                        {% endif %}
-
-                        {% if app.user and (recipe.creator == app.user or is_granted('ROLE_ADMIN')) %}
-                            <a href="{{ path('app_recipe_edit', {id: recipe.id}) }}">
-                                Edit
-                            </a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="12">No recipes match the selected filters.</td>
-                </tr>
+                <div class="col">
+                    <article class="card recipe-card content-card h-100">
+                        <a href="{{ path('app_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none">
+                            <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="recipe-card-image" alt="Image for {{ recipe.title }}">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <span class="badge rounded-pill text-bg-success">{{ recipe.dietaryType.name }}</span>
+                                <span class="text-secondary small text-nowrap"><i class="bi bi-clock me-1" aria-hidden="true"></i>{{ recipe.cookingTimeMinutes }} min</span>
+                            </div>
+                            <h2 class="h5 card-title"><a href="{{ path('app_recipe_show', {'id': recipe.id}) }}" class="link-dark text-decoration-none">{{ recipe.title }}</a></h2>
+                            <p class="recipe-description card-text text-secondary flex-grow-1">{{ recipe.shortDescription ?: 'No description provided.' }}</p>
+                            <div class="d-flex flex-wrap gap-3 text-secondary small border-top pt-3 mt-2">
+                                <span><i class="bi bi-people me-1" aria-hidden="true"></i>{{ recipe.servings }} servings</span>
+                                {% if recipe.caloriesPerServing is not null %}<span><i class="bi bi-lightning me-1" aria-hidden="true"></i>{{ recipe.caloriesPerServing }} kcal</span>{% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ path('app_recipe_show', {'id': recipe.id}) }}" class="btn btn-sm btn-outline-success">View recipe</a>
+                                {% if app.user %}<a href="{{ path('app_meal_planner_add', {id: recipe.id}) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>Plan</a>{% endif %}
+                                {% if is_granted('RECIPE_EDIT', recipe) %}<a href="{{ path('app_recipe_edit', {id: recipe.id}) }}" class="btn btn-sm btn-outline-secondary">Edit</a>{% endif %}
+                            </div>
+                        </div>
+                    </article>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
-    </div>
-
-    {% if is_granted('ROLE_USER') %}
-        <a href="{{ path('app_recipe_new') }}">Create new</a>
+        </div>
     {% endif %}
-
 {% endblock %}

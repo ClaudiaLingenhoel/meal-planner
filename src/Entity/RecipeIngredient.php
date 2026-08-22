@@ -6,6 +6,8 @@ use App\Repository\RecipeIngredientRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: RecipeIngredientRepository::class)]
 #[ORM\UniqueConstraint(
@@ -19,6 +21,23 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 )]
 class RecipeIngredient
 {
+    public const UNITS = [
+        'g',
+        'ml',
+        'tsp',
+        'tbsp',
+        'cup',
+        'piece',
+        'bunch',
+        'slice',
+        'clove',
+        'pinch',
+        'as needed',
+        'to taste',
+    ];
+
+    public const QUANTITY_OPTIONAL_UNITS = ['pinch', 'as needed', 'to taste'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,20 +45,40 @@ class RecipeIngredient
 
     #[ORM\ManyToOne(inversedBy: 'recipeIngredients')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Recipe $recipe = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipeIngredients')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Ingredient $ingredient = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[Assert\Positive]
     private ?string $quantity = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::UNITS)]
     private ?string $unit = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $specification = null;
+
+    #[Assert\Callback]
+    public function validateQuantity(ExecutionContextInterface $context): void
+    {
+        if (
+            null !== $this->unit
+            && !in_array($this->unit, self::QUANTITY_OPTIONAL_UNITS, true)
+            && null === $this->quantity
+        ) {
+            $context->buildViolation('Enter a quantity for this unit.')
+                ->atPath('quantity')
+                ->addViolation();
+        }
+    }
 
     public function getId(): ?int
     {

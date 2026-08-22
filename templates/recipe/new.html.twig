@@ -1,13 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    New Recipe
-{% endblock %}
+{% block title %}New Recipe | MealPlanner{% endblock %}
 
 {% block body %}
-    <h1>Create new Recipe</h1>
-
-    {{ include('recipe/_form.html.twig') }}
-
-    <a href="{{ path('app_recipe_index') }}">Back to recipes</a>
+    <div class="form-shell mx-auto">
+        <div class="page-heading mb-4">
+            <span class="text-success fw-semibold text-uppercase small">My recipes</span>
+            <h1 class="display-6 fw-bold mb-2">Create a recipe</h1>
+            <p class="text-secondary mb-0">Share the ingredients and steps needed to make your meal.</p>
+        </div>
+        {{ include('recipe/_form.html.twig') }}
+    </div>
 {% endblock %}

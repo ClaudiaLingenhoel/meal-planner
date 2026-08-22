@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('app_meal_planner_delete', {'id': plannedMeal.id}) }}" onsubmit="return confirm('Are you sure you want to remove this item from your planner?');">
+<form method="post" class="d-inline-flex" action="{{ path('app_meal_planner_delete', {'id': plannedMeal.id}) }}" onsubmit="return confirm('Are you sure you want to remove this item from your planner?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plannedMeal.id) }}">
-    <button class="btn">Remove</button>
+    <button class="btn btn-sm btn-outline-danger" aria-label="Remove {{ plannedMeal.recipe.title }} from planner"><i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Remove</span></button>
 </form>

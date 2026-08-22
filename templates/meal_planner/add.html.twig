@@ -1,15 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Add to Meal Planner
-{% endblock %}
+{% block title %}Add to Meal Planner | MealPlanner{% endblock %}
 
 {% block body %}
 
-    <h1>Add {{ recipe.title }} to Meal Planner</h1>
-
-    {{ include('meal_planner/_form.html.twig', {button_label: 'Add to planner'}) }}
-
-    <a href="{{ path('app_recipe_index') }}">Back to recipes</a>
+    <div class="form-shell mx-auto">
+        <nav aria-label="Breadcrumb" class="mb-3">
+            <ol class="breadcrumb small"><li class="breadcrumb-item"><a href="{{ path('app_recipe_show', {id: recipe.id}) }}">{{ recipe.title }}</a></li><li class="breadcrumb-item active" aria-current="page">Plan meal</li></ol>
+        </nav>
+        <div class="card content-card overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="recipe-hero-image h-100" alt="Image for {{ recipe.title }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body p-4">
+                        <span class="text-success fw-semibold text-uppercase small">Weekly planner</span>
+                        <h1 class="h2 mt-1 mb-2">Add {{ recipe.title }}</h1>
+                        <p class="text-secondary mb-4">Choose a date, meal time and serving count.</p>
+                        {{ include('meal_planner/_form.html.twig', {button_label: 'Add to planner'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{{ path('app_recipe_index') }}" class="btn btn-link text-secondary px-0 mt-3">Back to recipes</a>
+    </div>
 
 {% endblock %}

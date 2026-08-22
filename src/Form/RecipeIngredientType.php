@@ -25,26 +25,13 @@ class RecipeIngredientType extends AbstractType
             ->add('quantity', NumberType::class, [
                 'scale' => 2,
                 'attr' => [
-                    'min' => 0,
+                    'min' => 0.01,
                     'step' => '0.01',
                 ],
                 'required' => false,
             ])
             ->add('unit', ChoiceType::class, [
-                'choices' => [
-                    'g' => 'g',
-                    'ml' => 'ml',
-                    'tsp' => 'tsp',
-                    'tbsp' => 'tbsp',
-                    'cup' => 'cup',
-                    'piece' => 'piece',
-                    'bunch' => 'bunch',
-                    'slice' => 'slice',
-                    'clove' => 'clove',
-                    'pinch' => 'pinch',
-                    'as needed' => 'as needed',
-                    'to taste' => 'to taste',
-                ],
+                'choices' => array_combine(RecipeIngredient::UNITS, RecipeIngredient::UNITS),
                 'placeholder' => 'Select unit',
             ])
             ->add('specification', TextType::class, [

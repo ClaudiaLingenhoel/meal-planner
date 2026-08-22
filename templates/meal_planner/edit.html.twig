@@ -1,13 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Edit Planned Meal
-{% endblock %}
+{% block title %}Edit Planned Meal | MealPlanner{% endblock %}
 
 {% block body %}
-    <h1>Edit Planned Meal</h1>
-
-    {{ include('meal_planner/_form.html.twig', {button_label: 'Save changes'}) }}
-
-    <a href="{{ path('app_meal_planner_index') }}">Back to Plan</a>
+    <div class="form-shell mx-auto">
+        <div class="page-heading mb-4">
+            <span class="text-success fw-semibold text-uppercase small">Weekly planner</span>
+            <h1 class="display-6 fw-bold mb-2">Edit planned meal</h1>
+            <p class="text-secondary mb-0">Update the date, meal time or servings for <strong>{{ plannedMeal.recipe.title }}</strong>.</p>
+        </div>
+        <div class="card content-card">
+            <div class="card-body p-4">
+                {{ include('meal_planner/_form.html.twig', {button_label: 'Save changes'}) }}
+            </div>
+        </div>
+        <a href="{{ path('app_meal_planner_index') }}" class="btn btn-link text-secondary px-0 mt-3">Back to plan</a>
+    </div>
 {% endblock %}

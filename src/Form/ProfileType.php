@@ -18,6 +18,7 @@ class ProfileType extends AbstractType
             ->add('firstName', TextType::class)
             ->add('lastName', TextType::class)
             ->add('dietaryType', EntityType::class, [
+                'label' => 'Preferred dietary type',
                 'class' => DietaryType::class,
                 'choice_label' => 'name',
             ])

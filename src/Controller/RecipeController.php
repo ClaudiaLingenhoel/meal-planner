@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\DietaryTypeRepository;
 use App\Repository\RecipeRepository;
+use App\Security\RecipeVoter;
 use App\Service\FileUploader;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -104,16 +105,10 @@ final class RecipeController extends AbstractController
     }
 
     #[IsGranted('ROLE_USER')]
+    #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
-        if (
-            $recipe->getCreator() !== $this->getUser()
-            && !$this->isGranted('ROLE_ADMIN')
-        ) {
-            throw $this->createAccessDeniedException();
-        }
-
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
 
@@ -123,24 +118,19 @@ final class RecipeController extends AbstractController
             $recipe->setUpdatedAt($today);
 
             $imageFile = $form->get('image')->getData();
-            $oldImagePath = null;
+            $oldImageName = null;
 
             if ($imageFile) {
                 $newFilename = $fileUploader->upload($imageFile);
                 $oldImage = $recipe->getImage();
-
-                if ($oldImage) {
-                    $oldImagePath = $fileUploader->getTargetDirectory() . '/' . $oldImage;
-                }
+                $oldImageName = $oldImage;
 
                 $recipe->setImage($newFilename);
             }
 
             $entityManager->flush();
 
-            if ($oldImagePath && is_file($oldImagePath)) {
-                unlink($oldImagePath);
-            }
+            $fileUploader->remove($oldImageName);
 
             return $this->redirectToRoute('app_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -152,26 +142,17 @@ final class RecipeController extends AbstractController
     }
 
     #[IsGranted('ROLE_USER')]
+    #[IsGranted(RecipeVoter::DELETE, subject: 'recipe')]
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
-        if (
-            $recipe->getCreator() !== $this->getUser()
-            && !$this->isGranted('ROLE_ADMIN')
-        ) {
-            throw $this->createAccessDeniedException();
-        }
-
         if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
             $image = $recipe->getImage();
-            $imagePath = $image ? $fileUploader->getTargetDirectory() . '/' . $image : null;
 
             $entityManager->remove($recipe);
             $entityManager->flush();
 
-            if ($imagePath && is_file($imagePath)) {
-                unlink($imagePath);
-            }
+            $fileUploader->remove($image);
         }
 
         return $this->redirectToRoute('app_recipe_index', [], Response::HTTP_SEE_OTHER);

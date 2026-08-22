@@ -1,13 +1,26 @@
-const servingsInput = document.querySelector("#servings");
-const ingredientAmounts = document.querySelectorAll(".ingredient-amount");
+const initialisedServingsInputs = new WeakSet();
 
-if (servingsInput) {
-    const originalServings = parseInt(servingsInput.dataset.originalServings);
+const initialiseServingScaler = () => {
+    const servingsInput = document.querySelector("#servings");
+    if (!servingsInput || initialisedServingsInputs.has(servingsInput)) {
+        return;
+    }
+
+    const originalServings = Number.parseInt(
+        servingsInput.dataset.originalServings,
+        10,
+    );
+    if (!Number.isFinite(originalServings) || originalServings < 1) {
+        return;
+    }
+
+    initialisedServingsInputs.add(servingsInput);
+    const ingredientAmounts = document.querySelectorAll(".ingredient-amount");
 
     servingsInput.addEventListener("input", () => {
-        const selectedServings = parseInt(servingsInput.value);
+        const selectedServings = Number.parseInt(servingsInput.value, 10);
 
-        if (selectedServings < 1) {
+        if (!Number.isFinite(selectedServings) || selectedServings < 1) {
             return;
         }
 
@@ -38,10 +51,21 @@ if (servingsInput) {
             const unitElement =
                 ingredientAmount.querySelector(".ingredient-unit");
 
+            if (
+                !Number.isFinite(originalQuantity) ||
+                !quantityElement ||
+                !unitElement
+            ) {
+                return;
+            }
+
             quantityElement.textContent =
                 Math.round(scaledQuantity * 100) / 100;
 
             unitElement.textContent = displayUnit;
         });
     });
-}
+};
+
+document.addEventListener("turbo:load", initialiseServingScaler);
+initialiseServingScaler();

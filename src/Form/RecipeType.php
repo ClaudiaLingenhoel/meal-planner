@@ -23,6 +23,7 @@ class RecipeType extends AbstractType
         $builder
             ->add('title', TextType::class)
             ->add('cookingTimeMinutes', IntegerType::class, [
+                'label' => 'Cooking time (minutes)',
                 'attr' => [
                     'min' => 1,
                 ]
@@ -53,6 +54,9 @@ class RecipeType extends AbstractType
                 'label' => 'Upload image',
                 'mapped' => false,
                 'required' => false,
+                'attr' => [
+                    'accept' => 'image/png,image/jpeg',
+                ],
                 'constraints' => [
                     new Assert\File(
                         maxSize: '2048k',

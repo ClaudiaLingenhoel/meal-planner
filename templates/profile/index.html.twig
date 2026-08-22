@@ -1,20 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Profile
-{% endblock %}
+{% block title %}My Profile | MealPlanner{% endblock %}
 
 {% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="page-heading mb-4">
+                <span class="text-success fw-semibold text-uppercase small">Account</span>
+                <h1 class="display-6 fw-bold mb-2">My Profile</h1>
+                <p class="text-secondary mb-0">Review your account details and recipe preferences.</p>
+            </div>
 
-    <h1>My Profile</h1>
+            <div class="card content-card">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="profile-avatar rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="bi bi-person fs-2" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h2 class="h4 mb-1">{{ user.firstName }} {{ user.lastName }}</h2>
+                            <p class="text-secondary mb-0">{{ user.email }}</p>
+                        </div>
+                    </div>
 
-    <p>{{ user.firstName }} {{ user.lastName }}</p>
-    <p>{{ user.email }}</p>
+                    <dl class="row mb-4">
+                        <dt class="col-sm-5 text-secondary fw-normal">Preferred dietary type</dt>
+                        <dd class="col-sm-7 fw-semibold">{{ user.dietaryType ? user.dietaryType.name : 'No preference selected' }}</dd>
+                        <dt class="col-sm-5 text-secondary fw-normal">Account type</dt>
+                        <dd class="col-sm-7 fw-semibold mb-0">{{ is_granted('ROLE_ADMIN') ? 'Administrator' : 'Customer' }}</dd>
+                    </dl>
 
-    {% if user.dietaryType %}
-        <p>Preferred dietary type: {{ user.dietaryType.name }}</p>
-    {% endif %}
-
-    <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">Edit profile</a>
+                    <a href="{{ path('app_profile_edit') }}" class="btn btn-success"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
-

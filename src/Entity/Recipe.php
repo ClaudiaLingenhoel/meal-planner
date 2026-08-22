@@ -37,6 +37,7 @@ class Recipe
     private ?string $instructions = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url]
     private ?string $source = null;
 
     #[ORM\Column]
@@ -59,11 +60,13 @@ class Recipe
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?DietaryType $dietaryType = null;
 
     /**
      * @var Collection<int, RecipeIngredient>
      */
+    #[Assert\Count(min: 1, minMessage: 'Add at least one ingredient.')]
     #[Assert\Valid]
     #[ORM\OneToMany(targetEntity: RecipeIngredient::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
     private Collection $recipeIngredients;
@@ -76,6 +79,7 @@ class Recipe
 
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?User $creator = null;
 
     public function __construct()

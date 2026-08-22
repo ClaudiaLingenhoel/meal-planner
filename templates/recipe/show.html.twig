@@ -1,116 +1,94 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Recipe
-{% endblock %}
+{% block title %}{{ recipe.title }} | MealPlanner{% endblock %}
 
 {% block body %}
-    <h1>Recipe</h1>
+    <nav aria-label="Breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ path('app_recipe_index') }}">Recipes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ recipe.title }}</li>
+        </ol>
+    </nav>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ recipe.id }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>
-                    <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ recipe.title }}" style="width: 120px; height: auto;">
-                </td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ recipe.title }}</td>
-            </tr>
-            <tr>
-                <th>CookingTimeMinutes</th>
-                <td>{{ recipe.cookingTimeMinutes }}</td>
-            </tr>
-            <tr>
-                <th>ShortDescription</th>
-                <td>{{ recipe.shortDescription }}</td>
-            </tr>
+    <article>
+        <div class="card content-card overflow-hidden mb-4">
+            <div class="row g-0">
+                <div class="col-lg-6">
+                    <img src="{{ asset(recipe.image ? 'pictures/' ~ recipe.image : 'pictures/placeholder.png') }}" class="recipe-hero-image h-100" alt="Image for {{ recipe.title }}">
+                </div>
+                <div class="col-lg-6">
+                    <div class="card-body p-4 p-lg-5 h-100 d-flex flex-column">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="badge rounded-pill text-bg-success">{{ recipe.dietaryType.name }}</span>
+                            <span class="badge rounded-pill text-bg-light border text-dark"><i class="bi bi-clock me-1" aria-hidden="true"></i>{{ recipe.cookingTimeMinutes }} minutes</span>
+                        </div>
+                        <h1 class="display-6 fw-bold">{{ recipe.title }}</h1>
+                        <p class="lead text-secondary">{{ recipe.shortDescription ?: 'No description provided.' }}</p>
+                        <div class="row g-3 mt-auto pt-3">
+                            <div class="col-6">
+                                <div class="border rounded p-3 h-100">
+                                    <span class="d-block text-secondary small">Servings</span>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        <i class="bi bi-people text-success" aria-hidden="true"></i>
+                                        <input type="number" id="servings" class="form-control form-control-sm" min="1" max="99" value="{{ recipe.servings }}" data-original-servings="{{ recipe.servings }}" aria-label="Number of servings">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3 h-100">
+                                    <span class="d-block text-secondary small">Per serving</span>
+                                    <strong class="d-block mt-2"><i class="bi bi-lightning text-success me-1" aria-hidden="true"></i>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Not provided' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <tr>
-                <th>Instructions</th>
-                <td>{{ recipe.instructions }}</td>
-            </tr>
-
-            <tr>
-                <th>Servings</th>
-                <td>
-                    <label for="servings">Servings</label>
-                    <input type="number" id="servings" min="1" max="99" value="{{ recipe.servings }}" data-original-servings="{{ recipe.servings }}">
-                </td>
-            </tr>
-
-            <tr>
-                <th>Ingredients</th>
-                <td>
-                    <ul>
-                        {% for recipeIngredient in recipe.recipeIngredients %}
-                            <li>
-                                {% if recipeIngredient.quantity is not null %}
-                                    <span class="ingredient-amount" data-quantity="{{ recipeIngredient.quantity }}" data-unit="{{ recipeIngredient.unit }}">
-                                        <span class="ingredient-quantity">
-                                            {{ recipeIngredient.quantity }}
-                                        </span>
-                                        <span class="ingredient-unit">
-                                            {{ recipeIngredient.unit }}
-                                        </span>
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <section class="card content-card h-100">
+                    <div class="card-body p-4">
+                        <h2 class="h4 mb-3"><i class="bi bi-basket2 text-success me-2" aria-hidden="true"></i>Ingredients</h2>
+                        <ul class="list-group list-group-flush ingredient-list">
+                            {% for recipeIngredient in recipe.recipeIngredients %}
+                                <li class="list-group-item px-0 d-flex gap-2">
+                                    <i class="bi bi-check2 text-success" aria-hidden="true"></i>
+                                    <span>
+                                        {% if recipeIngredient.quantity is not null %}
+                                            <span class="ingredient-amount fw-semibold" data-quantity="{{ recipeIngredient.quantity }}" data-unit="{{ recipeIngredient.unit }}"><span class="ingredient-quantity">{{ recipeIngredient.quantity }}</span> <span class="ingredient-unit">{{ recipeIngredient.unit }}</span></span>
+                                        {% else %}<span class="fw-semibold">{{ recipeIngredient.unit }}</span>{% endif %}
+                                        {{ recipeIngredient.ingredient.name }}
+                                        {% if recipeIngredient.specification %}<span class="text-secondary">({{ recipeIngredient.specification }})</span>{% endif %}
                                     </span>
-                                {% else %}
-                                    {{ recipeIngredient.unit }}
-                                {% endif %}
-                                {{ recipeIngredient.ingredient.name }}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item px-0 text-secondary">No ingredients added.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-7">
+                <section class="card content-card h-100">
+                    <div class="card-body p-4">
+                        <h2 class="h4 mb-3"><i class="bi bi-list-ol text-success me-2" aria-hidden="true"></i>Instructions</h2>
+                        <div class="lh-lg">{{ recipe.instructions|nl2br }}</div>
+                        {% if recipe.source %}
+                            <div class="border-top mt-4 pt-3"><a href="{{ recipe.source }}" target="_blank" rel="noopener noreferrer" class="link-success">View original source <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i></a></div>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </div>
 
-                                {% if recipeIngredient.specification %}
-                                    ({{ recipeIngredient.specification }})
-                                {% endif %}
-                            </li>
-                        {% else %}
-                            <li>No ingredients added.</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-
-            <tr>
-                <th>Source</th>
-                <td>{{ recipe.source }}</td>
-            </tr>
-            <tr>
-                <th>Calories per serving</th>
-                <td>{{ recipe.caloriesPerServing is not null ? recipe.caloriesPerServing ~ ' kcal' : 'Unknown' }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ recipe.createdAt ? recipe.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ recipe.updatedAt ? recipe.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    {% if app.user %}
-        <a href="{{ path('app_meal_planner_add', {id: recipe.id}) }}" class="btn btn-primary">
-            Add to meal planner
-        </a>
-    {% endif %}
-
-    {% if app.user and (recipe.creator == app.user or is_granted('ROLE_ADMIN')) %}
-        <a href="{{ path('app_recipe_edit', {id: recipe.id}) }}">
-            Edit
-        </a>
-    {% endif %}
-
-    {% if app.user and (recipe.creator == app.user or is_granted('ROLE_ADMIN')) %}
-        {{ include('recipe/_delete_form.html.twig') }}
-    {% endif %}
-
-    <a href="{{ path('app_recipe_index') }}">back to list</a>
-
+        <div class="d-flex flex-wrap gap-2 mt-4 page-actions">
+            {% if app.user %}<a href="{{ path('app_meal_planner_add', {id: recipe.id}) }}" class="btn btn-success"><i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>Add to meal planner</a>{% endif %}
+            {% if is_granted('RECIPE_EDIT', recipe) %}<a href="{{ path('app_recipe_edit', {id: recipe.id}) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit recipe</a>{% endif %}
+            {% if is_granted('RECIPE_DELETE', recipe) %}{{ include('recipe/_delete_form.html.twig') }}{% endif %}
+            <a href="{{ path('app_recipe_index') }}" class="btn btn-link text-secondary">Back to recipes</a>
+        </div>
+        <p class="text-secondary small mt-4 mb-0">Added {{ recipe.createdAt ? recipe.createdAt|date('d M Y') : 'recently' }}{% if recipe.updatedAt %} · Updated {{ recipe.updatedAt|date('d M Y') }}{% endif %}</p>
+    </article>
 {% endblock %}

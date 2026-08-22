@@ -1,52 +1,58 @@
-{{ form_start(form) }}
-
-{{ form_row(form.title) }}
-{{ form_row(form.shortDescription) }}
-{{ form_row(form.cookingTimeMinutes) }}
-{{ form_row(form.servings) }}
-{{ form_row(form.caloriesPerServing) }}
-{{ form_row(form.dietaryType) }}
-{{ form_row(form.instructions) }}
-{{ form_row(form.source) }}
-{{ form_row(form.image) }}
-
-
-<h2>Ingredients</h2>
-
-{# prototype for new recipe-ingredients #}
-{% set ingredientPrototype %}
-    <div class="recipe-ingredient-item card p-3 mb-3">
-        {{ form_widget(form.recipeIngredients.vars.prototype) }}
-
-        <button type="button" class="remove-ingredient btn btn-secondary">
-            Remove
-        </button>
-    </div>
-{% endset %}
-
-{# recipe-ingredients collection #}
-<div id="recipe-ingredients" data-index="{{ form.recipeIngredients|length }}" data-prototype="{{ ingredientPrototype|e('html_attr') }}">
-
-    {# existing recipe-ingredients #}
-    {% for recipeIngredientForm in form.recipeIngredients %}
-        <div class="recipe-ingredient-item card p-3 mb-3">
-            {{ form_row(recipeIngredientForm, {
-            label:false
-            }) }}
-
-            <button type="button" class="remove-ingredient btn btn-secondary">
-                Remove
-            </button>
+{% macro ingredientFields(ingredientForm) %}
+    <div class="recipe-ingredient-item card bg-light p-3 mb-3">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">{{ form_row(ingredientForm.ingredient) }}</div>
+            <div class="col-6 col-md-3">{{ form_row(ingredientForm.quantity) }}</div>
+            <div class="col-6 col-md-3">{{ form_row(ingredientForm.unit) }}</div>
+            <div class="col-md-9">{{ form_row(ingredientForm.specification) }}</div>
+            <div class="col-md-3 d-grid"><button type="button" class="remove-ingredient btn btn-outline-danger"><i class="bi bi-trash me-1" aria-hidden="true"></i>Remove</button></div>
         </div>
-    {% endfor %}
-</div>
+    </div>
+{% endmacro %}
 
-<button type="button" id="add-ingredient" class="btn btn-secondary">
-    Add another ingredient
-</button>
+{% import _self as recipeForm %}
 
-<button class="btn">
-    {{ button_label|default('Save') }}
-</button>
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="card content-card mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 mb-3">Recipe information</h2>
+            <div class="row g-3">
+                <div class="col-12">{{ form_row(form.title) }}</div>
+                <div class="col-12">{{ form_row(form.shortDescription) }}</div>
+                <div class="col-sm-6 col-lg-3">{{ form_row(form.cookingTimeMinutes) }}</div>
+                <div class="col-sm-6 col-lg-3">{{ form_row(form.servings) }}</div>
+                <div class="col-sm-6 col-lg-3">{{ form_row(form.caloriesPerServing) }}</div>
+                <div class="col-sm-6 col-lg-3">{{ form_row(form.dietaryType) }}</div>
+                <div class="col-12">{{ form_row(form.instructions) }}</div>
+                <div class="col-md-6">{{ form_row(form.source) }}</div>
+                <div class="col-md-6">{{ form_row(form.image, {help: 'Optional JPG or PNG, up to 2 MB.'}) }}</div>
+            </div>
+        </div>
+    </div>
 
+    <div class="card content-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+                <div><h2 class="h5 mb-1">Ingredients</h2><p class="text-secondary small mb-0">Add at least one ingredient and its measurement.</p></div>
+                <button type="button" id="add-ingredient" class="btn btn-outline-success flex-shrink-0"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add ingredient</button>
+            </div>
+            {{ form_errors(form.recipeIngredients) }}
+
+            {% set ingredientPrototype %}
+                {{ recipeForm.ingredientFields(form.recipeIngredients.vars.prototype) }}
+            {% endset %}
+
+            <div id="recipe-ingredients" data-index="{{ form.recipeIngredients|length }}" data-prototype="{{ ingredientPrototype|e('html_attr') }}">
+                {% for recipeIngredientForm in form.recipeIngredients %}
+                    {{ recipeForm.ingredientFields(recipeIngredientForm) }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row gap-2">
+        <button class="btn btn-success px-4"><i class="bi bi-check-lg me-1" aria-hidden="true"></i>{{ button_label|default('Save') }}</button>
+        <a href="{{ path('app_recipe_index') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
 {{ form_end(form) }}

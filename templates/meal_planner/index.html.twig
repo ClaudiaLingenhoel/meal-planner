@@ -1,110 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Weekly Meal Planner
-{% endblock %}
+{% block title %}Weekly Meal Planner | MealPlanner{% endblock %}
+
+{% block main_container_class %}container-fluid px-3 px-xl-4 px-xxl-5{% endblock %}
 
 {% block body %}
-
-    {% set weekDays = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-    ] %}
-
     {% set mealTimes = ['breakfast', 'lunch', 'dinner', 'snack'] %}
+    {% set plannerRoute = adminView ? 'app_meal_planner_admin_view' : 'app_meal_planner_index' %}
+    {% set plannerParams = adminView ? {id: viewedUser.id} : {} %}
 
     {% if adminView %}
-        <div class="alert alert-info">
-            Admin view: Weekly meal plan for {{ viewedUser.email }}
+        <div class="alert alert-info d-flex align-items-center gap-2" role="status">
+            <i class="bi bi-shield-check" aria-hidden="true"></i>
+            <span>Admin view: weekly meal plan for <strong>{{ viewedUser.email }}</strong></span>
         </div>
     {% endif %}
 
-    <h1>Weekly Meal Planner</h1>
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+        <div class="page-heading">
+            <span class="text-success fw-semibold text-uppercase small">{{ adminView ? 'User schedule' : 'Your schedule' }}</span>
+            <h1 class="display-6 fw-bold mb-2">Weekly Meal Planner</h1>
+            <p class="text-secondary mb-0">
+                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                {{ startOfWeek|date('d M Y') }} – {{ endOfWeek|date('d M Y') }}
+            </p>
+        </div>
 
-    <p>{{ startOfWeek|date('d.m.Y') }} - {{ endOfWeek|date('d.m.Y') }}</p>
+        {% if not adminView %}
+            <a href="{{ path('app_recipe_index') }}" class="btn btn-success flex-shrink-0">
+                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add a meal
+            </a>
+        {% endif %}
+    </div>
 
-    {% if adminView %}
-        <a href="{{ path('app_meal_planner_admin_view', {
-            id: viewedUser.id,
-            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
-            }) }}">
-            Previous Week
-        </a>
+    <nav class="week-navigation d-flex flex-wrap gap-2 mb-4" aria-label="Choose planner week">
+        <a class="btn btn-outline-secondary" href="{{ path(plannerRoute, plannerParams|merge({week: startOfWeek|date_modify('-7 days')|date('Y-m-d')})) }}"><i class="bi bi-chevron-left me-1" aria-hidden="true"></i>Previous week</a>
+        <a class="btn btn-outline-success" href="{{ path(plannerRoute, plannerParams) }}">Current week</a>
+        <a class="btn btn-outline-secondary" href="{{ path(plannerRoute, plannerParams|merge({week: startOfWeek|date_modify('+7 days')|date('Y-m-d')})) }}">Next week<i class="bi bi-chevron-right ms-1" aria-hidden="true"></i></a>
+    </nav>
 
-        <a href="{{ path('app_meal_planner_admin_view', {id: viewedUser.id}) }}">
-            Current Week
-        </a>
-
-        <a href="{{ path('app_meal_planner_admin_view', {
-            id: viewedUser.id,
-            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
-            }) }}">
-            Next Week
-        </a>
-    {% else %}
-
-        <a href="{{ path('app_meal_planner_index', {
-            week: startOfWeek|date_modify('-7 days')|date('Y-m-d')
-            }) }}">
-            Previous Week
-        </a>
-
-        <a href="{{ path('app_meal_planner_index') }}">
-            Current Week
-        </a>
-
-        <a href="{{ path('app_meal_planner_index', {
-            week: startOfWeek|date_modify('+7 days')|date('Y-m-d')
-            }) }}">
-            Next Week
-        </a>
+    {% if plannedMeals is empty %}
+        <div class="alert alert-light border d-flex align-items-center gap-3 mb-4">
+            <i class="bi bi-calendar2-plus fs-3 text-success" aria-hidden="true"></i>
+            <div><strong>No meals planned this week.</strong>{% if not adminView %}<div class="text-secondary small">Browse recipes to start building your plan.</div>{% endif %}</div>
+        </div>
     {% endif %}
 
     <div class="weekly-planner">
         {% for i in 0..6 %}
             {% set currentDay = startOfWeek|date_modify('+' ~ i ~ ' days') %}
-
-            <section class="day-column">
-                <div class="day-header">
-                    <h2>{{ currentDay|date('l') }}</h2>
-                    <p>{{ currentDay|date('d.m.y') }}</p>
+            <section class="day-column" aria-labelledby="day-{{ i }}">
+                <div class="day-header d-flex justify-content-between align-items-baseline gap-2">
+                    <h2 id="day-{{ i }}" class="h5 mb-0">{{ currentDay|date('l') }}</h2>
+                    <span class="text-secondary small">{{ currentDay|date('d M') }}</span>
                 </div>
+
                 {% for mealTime in mealTimes %}
+                    {% set slotMeals = plannedMeals|filter(plannedMeal => plannedMeal.scheduledFor|date('Y-m-d') == currentDay|date('Y-m-d') and plannedMeal.mealTime.value == mealTime) %}
                     <div class="meal-slot">
-
-                        <h3>{{ mealTime|capitalize }}</h3>
-
-                        {% for plannedMeal in plannedMeals %}
-                            {% if plannedMeal.scheduledFor|date('Y-m-d') == currentDay|date('Y-m-d') and plannedMeal.mealTime.value == mealTime %}
-
-                                <div class="card mb-2">
-                                    <div class="card-body p-2">
-
-                                        <a href="{{ path('app_recipe_show', {'id': plannedMeal.recipe.id}) }}">
-                                            <img src="{{ asset(plannedMeal.recipe.image ? 'pictures/' ~ plannedMeal.recipe.image : 'pictures/placeholder.png') }}" class="card-img-top" alt="Image for {{ plannedMeal.recipe.title }}" style="width: 120px; height: auto;">
+                        <h3 class="text-secondary mb-2">{{ mealTime }}</h3>
+                        {% for plannedMeal in slotMeals %}
+                            <article class="planned-meal-card card border-0 shadow-sm mb-2">
+                                <div class="card-body p-2">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <a href="{{ path('app_recipe_show', {'id': plannedMeal.recipe.id}) }}" class="flex-shrink-0">
+                                            <img src="{{ asset(plannedMeal.recipe.image ? 'pictures/' ~ plannedMeal.recipe.image : 'pictures/placeholder.png') }}" class="planned-meal-image" alt="Image for {{ plannedMeal.recipe.title }}">
                                         </a>
-
-                                        <strong>{{ plannedMeal.recipe.title }}</strong>
-
-                                        Servings: {{ plannedMeal.servings }}
-
-                                        {% if not adminView %}
-                                            <div class="mt-2">
-                                                <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}">
-                                                    Edit
-                                                </a>
-
-                                                {{ include('meal_planner/_delete_form.html.twig') }}
-                                            </div>
-                                        {% endif %}
+                                        <div class="min-w-0">
+                                            <a href="{{ path('app_recipe_show', {'id': plannedMeal.recipe.id}) }}" class="planned-meal-title fw-semibold link-dark text-decoration-none d-block">{{ plannedMeal.recipe.title }}</a>
+                                            <span class="text-secondary small">{{ plannedMeal.servings }} servings</span>
+                                        </div>
                                     </div>
+                                    {% if not adminView %}
+                                        <div class="d-flex gap-1 mt-2 pt-2 border-top">
+                                            <a href="{{ path('app_meal_planner_edit', {'id': plannedMeal.id}) }}" class="btn btn-sm btn-outline-secondary flex-grow-1">Edit</a>
+                                            {{ include('meal_planner/_delete_form.html.twig') }}
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
+                            </article>
+                        {% else %}
+                            <span class="text-secondary small">Nothing planned</span>
                         {% endfor %}
                     </div>
                 {% endfor %}

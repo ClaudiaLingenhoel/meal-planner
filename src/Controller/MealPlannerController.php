@@ -7,7 +7,8 @@ use App\Entity\Recipe;
 use App\Entity\User;
 use App\Form\PlannedMealType;
 use App\Repository\PlannedMealRepository;
-use DateTimeImmutable;
+use App\Security\PlannedMealVoter;
+use App\Service\WeekResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,9 +21,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class MealPlannerController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(Request $request, PlannedMealRepository $plannedMealRepository): Response
+    public function index(
+        Request $request,
+        PlannedMealRepository $plannedMealRepository,
+        WeekResolver $weekResolver,
+    ): Response
     {
-        $startOfWeek = $this->getStartOfWeek($request);
+        $startOfWeek = $weekResolver->resolve($request->query->getString('week'));
         $endOfWeek = $startOfWeek->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
@@ -41,11 +46,14 @@ final class MealPlannerController extends AbstractController
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin/{id}', name: 'admin_view', methods: ['GET'])]
-    public function adminView(Request $request, User $user, PlannedMealRepository $plannedMealRepository): Response
+    public function adminView(
+        Request $request,
+        User $user,
+        PlannedMealRepository $plannedMealRepository,
+        WeekResolver $weekResolver,
+    ): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-        $startOfWeek = $this->getStartOfWeek($request);
+        $startOfWeek = $weekResolver->resolve($request->query->getString('week'));
         $endOfWeek = $startOfWeek->modify('+6 days');
 
         $plannedMeals = $plannedMealRepository->findForUserAndWeek(
@@ -87,15 +95,10 @@ final class MealPlannerController extends AbstractController
         ]);
     }
 
+    #[IsGranted(PlannedMealVoter::EDIT, subject: 'plannedMeal')]
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, PlannedMeal $plannedMeal, EntityManagerInterface $entityManager): Response
     {
-        if (
-            $plannedMeal->getUser() !== $this->getUser()
-        ) {
-            throw $this->createAccessDeniedException();
-        }
-
         $form = $this->createForm(PlannedMealType::class, $plannedMeal);
         $form->handleRequest($request);
 
@@ -110,36 +113,15 @@ final class MealPlannerController extends AbstractController
         ]);
     }
 
+    #[IsGranted(PlannedMealVoter::DELETE, subject: 'plannedMeal')]
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, PlannedMeal $plannedMeal, EntityManagerInterface $entityManager): Response
     {
-        if (
-            $plannedMeal->getUser() !== $this->getUser()
-        ) {
-            throw $this->createAccessDeniedException();
-        }
-
         if ($this->isCsrfTokenValid('delete' . $plannedMeal->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($plannedMeal);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_meal_planner_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    private function getStartOfWeek(Request $request): DateTimeImmutable
-    {
-        $week = $request->query->getString('week');
-        if ('' === $week) {
-            return new DateTimeImmutable('monday this week');
-        }
-
-        $selectedDate = DateTimeImmutable::createFromFormat('!Y-m-d', $week);
-        $errors = DateTimeImmutable::getLastErrors();
-        if (false === $selectedDate || (false !== $errors && (0 < $errors['warning_count'] || 0 < $errors['error_count']))) {
-            return new DateTimeImmutable('monday this week');
-        }
-
-        return $selectedDate->modify('monday this week');
     }
 }

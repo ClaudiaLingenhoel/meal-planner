@@ -28,10 +28,12 @@ class PlannedMeal
 
     #[ORM\ManyToOne(inversedBy: 'plannedMeals')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'plannedMeals')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Recipe $recipe = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -86,6 +88,11 @@ class PlannedMeal
         $this->scheduledFor = $scheduledFor;
 
         return $this;
+    }
+
+    public function getScheduledForDisplay(): string
+    {
+        return $this->scheduledFor?->format('Y-m-d') ?? '';
     }
 
     public function getMealTime(): ?MealTime

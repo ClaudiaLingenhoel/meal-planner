@@ -17,15 +17,18 @@ class PlannedMealType extends AbstractType
     {
         $builder
             ->add('scheduledFor', DateType::class, [
+                'label' => 'Date',
                 'widget' => 'single_text'
             ])
             ->add('mealTime', EnumType::class, [
+                'label' => 'Meal time',
                 'class' => MealTime::class,
                 'placeholder' => 'Select meal time',
             ])
             ->add('servings', IntegerType::class, [
                 'attr' => [
                     'min' => 1,
+                    'max' => 100,
                 ]
             ])
         ;

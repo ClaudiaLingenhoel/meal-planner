@@ -1,35 +1,46 @@
-const checkboxes = document.querySelectorAll(".shopping-checkbox");
-const shoppingList = document.querySelector("#shopping-list");
+const initialisedShoppingLists = new WeakSet();
 
-if (shoppingList) {
+const initialiseShoppingList = () => {
+    const shoppingList = document.querySelector("#shopping-list");
+    if (!shoppingList || initialisedShoppingLists.has(shoppingList)) {
+        return;
+    }
+
+    initialisedShoppingLists.add(shoppingList);
+    const checkboxes = shoppingList.querySelectorAll(".shopping-checkbox");
     const week = shoppingList.dataset.week;
     const user = shoppingList.dataset.user;
-    const storageKey = "checkedShoppingItems_" + user + "_" + week;
+    const storageKey = `checkedShoppingItems_${user}_${week}`;
 
-    let checkedItems = JSON.parse(localStorage.getItem(storageKey)) || [];
+    let checkedItems = [];
+    try {
+        const storedItems = JSON.parse(localStorage.getItem(storageKey));
+        if (Array.isArray(storedItems)) {
+            checkedItems = storedItems;
+        }
+    } catch {
+        localStorage.removeItem(storageKey);
+    }
 
     checkboxes.forEach((checkbox) => {
         const key = checkbox.dataset.key;
 
-        // restore checked items
         if (checkedItems.includes(key)) {
             checkbox.checked = true;
         }
 
         checkbox.addEventListener("change", () => {
             if (checkbox.checked) {
-                // item.classList.add("checked");
                 if (!checkedItems.includes(key)) {
                     checkedItems.push(key);
                 }
             } else {
-                // item.classList.remove("checked");
-
-                checkedItems = checkedItems.filter((itemKey) => {
-                    return itemKey !== key;
-                });
+                checkedItems = checkedItems.filter((itemKey) => itemKey !== key);
             }
             localStorage.setItem(storageKey, JSON.stringify(checkedItems));
         });
     });
-}
+};
+
+document.addEventListener("turbo:load", initialiseShoppingList);
+initialiseShoppingList();
