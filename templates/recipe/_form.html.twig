@@ -5,14 +5,14 @@
             <div class="col-6 col-md-3">{{ form_row(ingredientForm.quantity) }}</div>
             <div class="col-6 col-md-3">{{ form_row(ingredientForm.unit) }}</div>
             <div class="col-md-9">{{ form_row(ingredientForm.specification) }}</div>
-            <div class="col-md-3 d-grid"><button type="button" class="remove-ingredient btn btn-outline-danger"><i class="bi bi-trash me-1" aria-hidden="true"></i>Remove</button></div>
+            <div class="col-md-3 d-grid mb-3"><button type="button" class="remove-ingredient btn btn-outline-danger"><i class="bi bi-trash me-1" aria-hidden="true"></i>Remove</button></div>
         </div>
     </div>
 {% endmacro %}
 
 {% import _self as recipeForm %}
 
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
     {{ form_errors(form) }}
     <div class="card content-card mb-4">
         <div class="card-body p-4">

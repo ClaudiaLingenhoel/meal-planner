@@ -2,7 +2,7 @@
 
 ## Product Philosophy
 
-The application focuses on the joy of cooking, eating, and discovering food rather than calorie counting, weight loss, or diet culture. It helps users discover recipes, plan regular meals, accommodate dietary preferences, and organize their weekly grocery shopping.
+The application focuses on making cooking, meal planning, and grocery shopping simple and enjoyable. It helps users discover recipes, plan meals, accommodate dietary preferences, adjust serving sizes, and organize their weekly grocery shopping.
 
 ---
 
@@ -24,11 +24,11 @@ Mia lives on a limited budget and wants to avoid unnecessary grocery purchases a
 
 ---
 
-## Alex – Rediscovering the Joy of Food
+## Alex – The Busy Young Professional
 
 **Age:** 28
 
-Alex is recovering from an eating disorder and wants to rediscover cooking and eating as enjoyable parts of everyday life. Meal planning helps provide structure without focusing on calories, weight, or diet culture.
+Alex has a busy schedule and wants to make cooking a more regular and enjoyable part of everyday life. Meal planning helps reduce the stress of deciding what to eat and makes it easier to prepare meals in advance.
 
 **Goals:**
 
@@ -75,7 +75,7 @@ Daniel is responsible for most of his family's meal planning and cooking and wan
 ### Acceptance Criteria
 
 * Users can browse recipes from all users and view recipe details.
-* Recipe details include ingredients, instructions, cooking time, servings, and dietary type.
+* Recipe details include ingredients, instructions, cooking time, servings, calories per serving, and dietary type.
 * Users can search recipes and filter by dietary type.
 * A vegetarian filter includes vegetarian and vegan recipes.
 
@@ -88,7 +88,8 @@ Daniel is responsible for most of his family's meal planning and cooking and wan
 ### Acceptance Criteria
 
 * Users can create, edit, and delete their own recipes.
-* Recipes can contain multiple ingredients with quantity, unit, and optional specification.
+* Recipes can contain multiple ingredients with quantity, unit, and optional specification (shopping note).
+* Users can provide calorie information per serving for their recipes.
 * Users can upload a recipe image; a default is shown when none is provided.
 * Users cannot edit or delete another user's recipes.
 * Forms are validated.
@@ -101,7 +102,7 @@ Daniel is responsible for most of his family's meal planning and cooking and wan
 
 ### Acceptance Criteria
 
-* Users can schedule recipes by date and meal time: breakfast, lunch, or dinner.
+* Users can schedule recipes by date and meal time: breakfast, lunch, dinner, or snack.
 * Users can view their weekly meal plan.
 * Users can edit and remove planned meals.
 * The same recipe cannot be added twice to the same meal slot.
@@ -115,9 +116,9 @@ Daniel is responsible for most of his family's meal planning and cooking and wan
 
 ### Acceptance Criteria
 
-* Ingredients from planned recipes are included.
+* Ingredients from planned recipes are included based on the selected number of servings.
 * Matching ingredients with compatible units are grouped and their quantities added together.
-* Ingredient specifications are displayed where applicable.
+* Ingredient shopping notes are displayed where applicable.
 
 ---
 
@@ -145,16 +146,3 @@ Daniel is responsible for most of his family's meal planning and cooking and wan
 * Regular users cannot access admin functionality.
 
 ---
-
-# Optional User Stories
-
-## US08 – Save Recipes
-
-> As a user looking for meal inspiration, I want to save recipes, so that I can easily find them again later.
-
-### Acceptance Criteria
-
-* Users can save recipes created by other users.
-* Users can view their saved recipes in one place.
-* Users can remove recipes from their saved list.
-* Saving a recipe does not modify the original recipe.
