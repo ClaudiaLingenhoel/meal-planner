@@ -100,6 +100,8 @@ sql/meal_planner.sql
 
 The SQL dump contains the database structure and the project data used for the application demo.
 
+Demo accounts: user@user.at pw: aaa111 / admin@admin.at pw: aaa111
+
 Alternatively, the database schema can be created from the Doctrine migrations, but the demo and reference data must then be added separately.
 
 ### 4. Start the application

@@ -27,6 +27,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkTo(UserCrudController::class, 'User', 'fas fa-user');
         yield MenuItem::linkTo(PlannedMealCrudController::class, 'Meal Plans', 'fas fa-calendar');
-        yield MenuItem::linkToRoute('Recipe Index', 'fas fa-egg', 'app_recipe_index');
+        yield MenuItem::linkToRoute('Recipe Index', 'fas fa-egg text-dark', 'app_recipe_index');
     }
 }

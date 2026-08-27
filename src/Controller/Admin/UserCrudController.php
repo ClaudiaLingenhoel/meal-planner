@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -31,7 +32,7 @@ class UserCrudController extends AbstractCrudController
         return [
             TextField::new('firstName'),
             TextField::new('lastName'),
-            TextField::new('email'),
+            EmailField::new('email'),
 
             TextField::new('plainPassword', 'Password')
                 ->setFormType(PasswordType::class)
