@@ -48,6 +48,7 @@
                     {{ recipeForm.ingredientFields(recipeIngredientForm) }}
                 {% endfor %}
             </div>
+            {% do form.recipeIngredients.setRendered %}
         </div>
     </div>
 
